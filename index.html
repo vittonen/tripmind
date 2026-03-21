@@ -1194,20 +1194,8 @@ function showDetailFromPlan(idx) {
   if (actions.length > 0) {
     banner.style.display = 'block';
     banner.className = 'actions-banner';
-    document.getElementById('ab-title').textContent = 'Actions required for today';
-    document.getElementById('ab-dot').style.background = 'var(--red-dark)';
-    banner.innerHTML = `
-      <div class="ab-title"><div class="ab-dot"></div><span>Actions required for today</span></div>
-      ${actions.map((a,i) => `
-        <div class="action-item">
-          <div class="acheck" id="dac${i}" onclick="tickDayAction(${i})">
-            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>
-          </div>
-          <div>
-            <div class="aname" id="dan${i}">${a.name}</div>
-            <div class="adesc" id="dad${i}">${a.description}</div>
-          </div>
-        </div>`).join('')}`;
+    banner.innerHTML = '<div class="ab-title"><div class="ab-dot" style="background:var(--red-dark)"></div><span>Actions required for today</span></div>' +
+      actions.map((a,i) => '<div class="action-item"><div class="acheck" id="dac' + i + '" onclick="tickDayAction(' + i + ')"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg></div><div><div class="aname" id="dan' + i + '">' + a.name + '</div><div class="adesc" id="dad' + i + '">' + a.description + '</div></div></div>').join('');
   } else {
     banner.style.display = 'none';
   }
