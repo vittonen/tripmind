@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TripMind</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green: #1D9E75; --green-dark: #0F6E56; --green-mid: #5DCAA5; --green-light: #9FE1CB; --green-pale: #E1F5EE;
+    --amber: #EF9F27; --amber-pale: #FAEEDA; --amber-dark: #854F0B;
+    --red: #E24B4A; --red-pale: #FCEBEB; --red-dark: #A32D2D;
+    --text: #1a1a1a; --text-sec: #6b7280; --text-ter: #9ca3af;
+    --border: rgba(0,0,0,0.1); --border-med: rgba(0,0,0,0.15);
+    --bg: #ffffff; --bg-sec: #f9f9f7; --bg-ter: #f3f2ef;
+    --radius: 8px; --radius-lg: 12px; --radius-xl: 16px;
+    --font: 'Georgia', serif;
+    --font-ui: system-ui, -apple-system, sans-serif;
+  }
+  html, body { height: 100%; }
+  body { font-family: var(--font-ui); background: var(--bg-ter); color: var(--text); font-size: 15px; line-height: 1.6; }
+
+  /* HEADER */
+  .app-header { position: fixed; top: 0; left: 0; right: 0; height: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; z-index: 1000; }
+  .header-logo { font-size: 16px; font-weight: 600; color: var(--text); letter-spacing: -0.4px; cursor: pointer; font-family: var(--font); }
+  .header-logo span { color: var(--green); }
+  .header-center { font-size: 13px; color: var(--text-sec); background: var(--bg-sec); padding: 4px 14px; border-radius: 20px; border: 0.5px solid var(--border); display: none; align-items: center; gap: 6px; cursor: pointer; }
+  .header-center.visible { display: flex; }
+  .header-center-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .header-right { display: flex; gap: 8px; }
+  .hbtn { font-size: 13px; padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-sec); cursor: pointer; font-family: var(--font-ui); transition: all 0.15s; display: none; }
+  .hbtn.visible { display: block; }
+  .hbtn:hover { border-color: var(--green); color: var(--green); }
+  .hbtn.primary { background: var(--green); color: white; border-color: var(--green); display: block; }
+  .hbtn.primary:hover { background: var(--green-dark); }
+
+  /* LAYOUT */
+  .app-body { padding-top: 52px; min-height: 100vh; }
+  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+  .screen.active { display: block; }
+  .screen.wide { max-width: 900px; }
+
+  /* WIZARD */
+  .wizard-header { position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 14px 1.5rem; z-index: 100; }
+  .wizard-steps { display: flex; align-items: center; justify-content: center; gap: 0; max-width: 400px; margin: 0 auto; }
+  .wstep { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; min-width: 80px; }
+  .wstep-num { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border-med); background: var(--bg); color: var(--text-sec); font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .wstep-label { font-size: 11px; color: var(--text-sec); font-weight: 500; white-space: nowrap; transition: color 0.2s; }
+  .wstep.active .wstep-num { background: var(--green); border-color: var(--green); color: white; }
+  .wstep.active .wstep-label { color: var(--green-dark); font-weight: 600; }
+  .wstep.done .wstep-num { background: var(--green-pale); border-color: var(--green-mid); color: var(--green-dark); }
+  .wstep.done .wstep-label { color: var(--green-dark); }
+  .wstep-line { flex: 1; height: 2px; background: var(--border); margin: 0 4px; margin-bottom: 20px; transition: background 0.2s; max-width: 60px; }
+  .wstep-line.done { background: var(--green-mid); }
+  .wizard-page { display: none; }
+  .wizard-page.active { display: block; }
+  .wizard-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 2rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); }
+  .wizard-next { font-family: var(--font-ui); font-size: 14px; font-weight: 600; padding: 10px 24px; border-radius: var(--radius-lg); background: var(--green); color: white; border: none; cursor: pointer; transition: background 0.15s; }
+  .wizard-next:hover { background: var(--green-dark); }
+  .wizard-back { font-family: var(--font-ui); font-size: 13px; padding: 8px 16px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-sec); cursor: pointer; transition: all 0.15s; }
+  .wizard-back:hover { border-color: var(--green); color: var(--green); }
+
+  /* PROGRESS BAR (keep for compat) */
+  .progress-bar-wrap { position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 10px 1rem 8px; z-index: 100; }
+  .progress-row { display: flex; align-items: center; gap: 10px; max-width: 720px; margin: 0 auto; }
+  .progress-track { flex: 1; height: 3px; background: var(--bg-ter); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; width: 0%; }
+  .progress-label { font-size: 12px; color: var(--text-sec); white-space: nowrap; }
+
+  /* FORM */
+  .welcome-note { font-size: 13px; color: var(--text-sec); background: var(--bg-sec); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1.5rem; line-height: 1.6; }
+  .welcome-note b { color: var(--text); font-weight: 600; }
+  .form-section { margin-bottom: 2rem; }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text-sec); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--border); }
+  .grid-2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr); gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 13px; color: var(--text-sec); }
+  .field input, .field select, .field textarea { font-family: var(--font-ui); font-size: 14px; padding: 8px 12px; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green-mid); }
+  .field textarea { resize: vertical; min-height: 60px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { font-size: 13px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border-med); color: var(--text-sec); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .tag:hover, .tag.on { border-color: var(--green); color: var(--green-dark); background: var(--green-pale); }
+  .tag-add { display: flex; gap: 8px; margin-top: 10px; }
+  .tag-add input { font-size: 13px; flex: 1; padding: 5px 10px; border: 0.5px solid var(--border-med); border-radius: var(--radius); font-family: var(--font-ui); outline: none; }
+  .tag-add button { font-size: 13px; padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; cursor: pointer; font-family: var(--font-ui); }
+  .tag-add button:hover { border-color: var(--green); color: var(--green); }
+
+  /* FLIGHT EXPAND */
+  .flight-block { margin-top: 10px; }
+  .flight-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-sec); cursor: pointer; width: fit-content; user-select: none; }
+  .flight-toggle:hover { color: var(--green); }
+  .flight-arrow { font-size: 10px; transition: transform 0.2s; display: inline-block; }
+  .flight-arrow.open { transform: rotate(90deg); }
+  .flight-details { display: none; margin-top: 8px; background: var(--bg-sec); border-radius: var(--radius); padding: 12px; }
+  .flight-details.open { display: block; }
+  .flight-note { font-size: 12px; color: var(--text-sec); margin-top: 8px; }
+
+  /* TRAVEL PACE */
+  .pace-block { background: var(--bg-sec); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-top: 10px; }
+  .pace-onboarding { font-size: 12px; color: var(--text-sec); background: var(--bg); border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 12px; line-height: 1.5; }
+  .pace-notice { font-size: 12px; color: var(--text-sec); margin-bottom: 10px; }
+  .trip-length { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; color: var(--text-sec); }
+  .trip-length button { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid var(--border-med); background: transparent; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-sec); line-height: 1; transition: all 0.15s; }
+  .trip-length button:hover { border-color: var(--green); color: var(--green); }
+  .trip-length .days-val { font-weight: 600; color: var(--text); min-width: 52px; text-align: center; }
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .preset { font-size: 13px; padding: 5px 14px; border-radius: 20px; border: 0.5px solid var(--border-med); color: var(--text-sec); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .preset:hover, .preset.on { border-color: var(--green); color: var(--green-dark); background: var(--green-pale); }
+  .pace-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-sec); cursor: pointer; user-select: none; }
+  .legend-item.sel .ldot { outline: 2px solid var(--green); outline-offset: 2px; }
+  .legend-item.sel span { color: var(--text); font-weight: 600; }
+  .ldot { width: 11px; height: 11px; border-radius: 50%; }
+  .ldot.intense { background: var(--green-dark); }
+  .ldot.medium { background: var(--green-light); border: 0.5px solid var(--green-mid); }
+  .ldot.rest { background: var(--green-pale); border: 0.5px solid var(--green-light); }
+  .days-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .day-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .dcell { width: 34px; height: 34px; border-radius: 50%; border: 0.5px solid var(--border-med); background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--text-sec); cursor: pointer; transition: all 0.15s; user-select: none; }
+  .dcell.intense { background: var(--green-dark); border-color: var(--green-dark); color: var(--green-light); }
+  .dcell.medium { background: var(--green-light); border-color: var(--green-mid); color: var(--green-dark); }
+  .dcell.rest { background: var(--green-pale); border-color: var(--green-light); color: var(--green-dark); }
+  .dlabel { font-size: 10px; color: var(--text-ter); }
+  .pace-summary { font-size: 12px; color: var(--text-sec); padding: 7px 10px; background: var(--bg); border-radius: var(--radius); }
+
+  /* TOGGLE */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: var(--bg-sec); border-radius: var(--radius); margin-top: 12px; }
+  .toggle-left { display: flex; flex-direction: column; gap: 2px; }
+  .toggle-lbl { font-size: 14px; color: var(--text); }
+  .toggle-sub { font-size: 12px; color: var(--text-sec); }
+  .tog { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+  .tog input { opacity: 0; width: 0; height: 0; }
+  .tog-track { position: absolute; inset: 0; background: var(--border-med); border-radius: 20px; cursor: pointer; transition: background 0.2s; }
+  .tog input:checked + .tog-track { background: var(--green); }
+  .tog-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: white; transition: transform 0.2s; pointer-events: none; }
+  .tog input:checked ~ .tog-thumb { transform: translateX(18px); }
+  .flights-confirm { font-size: 12px; color: var(--green-dark); background: var(--green-pale); border-radius: var(--radius); padding: 8px 12px; margin-top: 8px; display: none; }
+  .flights-confirm.show { display: block; }
+
+  /* CTA */
+  .cta-wrap { display: flex; justify-content: center; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); }
+  .cta-btn { font-family: var(--font-ui); font-size: 15px; font-weight: 600; padding: 14px 48px; border-radius: var(--radius-lg); background: var(--green); color: white; border: none; cursor: pointer; transition: background 0.15s; }
+  .cta-btn:hover { background: var(--green-dark); }
+
+  /* LOADING */
+  .loading-wrap { display: flex; flex-direction: column; align-items: center; padding: 3rem 1rem; }
+  .globe-scene { position: relative; width: 160px; height: 160px; margin-bottom: 2.5rem; }
+  .globe-pulse { position: absolute; inset: -16px; border-radius: 50%; border: 2px solid var(--green-mid); opacity: 0; animation: ripple 2.5s ease-out infinite; }
+  .gp2 { animation-delay: 0.8s; }
+  .gp3 { animation-delay: 1.6s; }
+  @keyframes ripple { 0%{transform:scale(0.85);opacity:0.5} 100%{transform:scale(1.25);opacity:0} }
+  .globe { width: 160px; height: 160px; border-radius: 50%; background: var(--green-pale); border: 2px solid var(--green-mid); position: relative; overflow: hidden; animation: spin 20s linear infinite; }
+  @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .land { position: absolute; background: var(--green); }
+  .l1{width:56px;height:42px;top:26px;left:20px;border-radius:40% 60% 55% 45%}
+  .l2{width:44px;height:52px;top:54px;left:84px;border-radius:55% 45% 40% 60%}
+  .l3{width:36px;height:30px;top:100px;left:38px;border-radius:50% 40% 60% 45%}
+  .l4{width:24px;height:20px;top:16px;left:108px;border-radius:45% 55% 50% 40%}
+  .l5{width:28px;height:24px;top:118px;left:100px;border-radius:40% 55% 45% 50%}
+  .gline{position:absolute;border:1px dashed rgba(15,110,86,0.2);border-radius:50%}
+  .gl1{width:160px;height:54px;top:53px;left:0}
+  .gl2{width:160px;height:98px;top:31px;left:0}
+  .gshine{position:absolute;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.2);top:16px;left:20px}
+  .steps-list { width: 100%; max-width: 360px; margin-bottom: 1.5rem; }
+  .lstep { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 0.5px solid var(--border); opacity: 0.2; transition: opacity 0.4s, transform 0.4s; transform: translateX(-6px); }
+  .lstep:last-child { border-bottom: none; }
+  .lstep.active { opacity: 1; transform: translateX(0); }
+  .lstep.done { opacity: 0.6; transform: translateX(0); }
+  .step-ind { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border-med); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+  .lstep.active .step-ind { border-color: var(--green); animation: pulseR 1.2s infinite; }
+  .lstep.active .step-ind::after { content:''; width:7px; height:7px; border-radius:50%; background:var(--green); display:block; }
+  .lstep.done .step-ind { border-color:var(--green); background:var(--green); }
+  .lstep.done .step-ind::after { content:''; display:block; width:10px; height:10px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10' fill='none' stroke='white' stroke-width='1.8'%3E%3Cpath d='M1.5 5l2.5 2.5 4.5-4.5'/%3E%3C/svg%3E"); background-size:contain; background-repeat:no-repeat; }
+  @keyframes pulseR { 0%,100%{box-shadow:0 0 0 0 rgba(29,158,117,0.3)} 50%{box-shadow:0 0 0 4px rgba(29,158,117,0.1)} }
+  .step-txt { font-size: 14px; color: var(--text); flex: 1; }
+  .lstep.done .step-txt { color: var(--text-sec); }
+  .load-progress { width: 100%; max-width: 360px; }
+  .lp-track { width: 100%; height: 3px; background: var(--bg-ter); border-radius: 2px; overflow: hidden; }
+  .lp-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.8s ease; width: 0%; }
+  .lp-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sec); margin-top: 6px; }
+
+  /* OUTPUT */
+  .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-sec); margin-bottom: 1.25rem; }
+  .bc-link { cursor: pointer; transition: color 0.15s; }
+  .bc-link:hover { color: var(--green); }
+  .bc-sep { color: var(--border-med); }
+  .bc-active { color: var(--text); font-weight: 600; }
+  .wow-block { background: var(--bg-sec); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.75rem; border: 0.5px solid var(--border); }
+  .wow-ready { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
+  .wow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  .wow-headline { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.35; margin-bottom: 0.75rem; font-family: var(--font); }
+  .wow-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-sec); }
+  .out-section-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
+  .sb-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .sb-row:last-child { border-bottom: none; }
+  .sb-icon { width: 32px; height: 32px; border-radius: var(--radius); background: var(--bg-sec); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .sb-icon svg { width: 16px; height: 16px; color: var(--text-sec); }
+  .sb-body { flex: 1; }
+  .sb-label { font-size: 11px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 600; margin-bottom: 3px; }
+  .sb-value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .sb-note { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+  .sb-alert { font-size: 12px; color: var(--amber-dark); background: var(--amber-pale); padding: 4px 9px; border-radius: var(--radius); display: inline-block; margin-top: 4px; }
+  .sb-good { font-size: 12px; color: var(--green-dark); background: var(--green-pale); padding: 4px 9px; border-radius: var(--radius); display: inline-block; margin-top: 4px; }
+  .sb-right { display: flex; flex-direction: column; align-items: flex-end; padding-top: 2px; }
+  .adj-btn { font-size: 12px; color: var(--text-sec); border: 0.5px solid var(--border-med); border-radius: 20px; padding: 3px 10px; cursor: pointer; white-space: nowrap; transition: all 0.15s; background: transparent; font-family: var(--font-ui); }
+  .adj-btn:hover { border-color: var(--green); color: var(--green); }
+  .top10-bar { display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap; }
+  .t10 { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; }
+  .t10.on { background: var(--green-dark); color: var(--green-light); }
+  .t10.off { background: var(--bg-sec); color: var(--text-sec); border: 0.5px solid var(--border-med); }
+  .pace-inner { background: var(--bg-sec); border-radius: var(--radius); padding: 0.75rem 1rem; margin-top: 8px; }
+  .dots-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .out-dot-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .out-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+  .out-dot.intense { background: var(--green-dark); color: var(--green-light); }
+  .out-dot.medium { background: var(--green-light); color: var(--green-dark); }
+  .out-dot.rest { background: var(--green-pale); border: 0.5px solid var(--green-light); color: var(--green-dark); }
+  .out-dlabel { font-size: 10px; color: var(--text-ter); }
+  .out-legend { display: flex; gap: 14px; margin-top: 10px; }
+  .out-li { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-sec); }
+  .out-ldot { width: 9px; height: 9px; border-radius: 50%; }
+  .pace-alert { font-size: 12px; color: var(--amber-dark); background: var(--amber-pale); padding: 7px 10px; margin-top: 8px; border-left: 2px solid var(--amber); }
+  .transport-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+  .tr-pill { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .tr-pill.rec { background: var(--green-pale); color: var(--green-dark); border: 0.5px solid var(--green-mid); }
+  .tr-pill.req { background: var(--bg-sec); color: var(--text-sec); border: 0.5px solid var(--border-med); text-decoration: line-through; }
+  .tr-pill svg { width: 13px; height: 13px; flex-shrink: 0; }
+  .divider { height: 0.5px; background: var(--border); margin: 1.5rem 0; }
+  .days-section { background: var(--bg-sec); border-radius: var(--radius-lg); padding: 1.25rem; }
+  .day-list-row { display: flex; align-items: flex-start; gap: 12px; padding: 9px 10px; border-radius: var(--radius); cursor: pointer; transition: background 0.15s; border-bottom: 0.5px solid var(--border); }
+  .day-list-row:last-child { border-bottom: none; }
+  .day-list-row:hover { background: var(--bg); }
+  .dl-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+  .dl-dot.intense { background: var(--green-dark); color: var(--green-light); }
+  .dl-dot.medium { background: var(--green-light); color: var(--green-dark); }
+  .dl-dot.rest { background: var(--green-pale); border: 0.5px solid var(--green-light); color: var(--green-dark); }
+  .dl-body { flex: 1; padding-top: 2px; }
+  .dl-meta { font-size: 11px; color: var(--text-sec); margin-bottom: 2px; }
+  .dl-loc { font-size: 15px; font-weight: 600; color: var(--text); }
+  .dl-sub { font-size: 12px; color: var(--text-sec); font-style: italic; margin-top: 1px; }
+  .dev-pill { font-size: 11px; color: var(--amber-dark); background: var(--amber-pale); padding: 2px 8px; border-radius: 20px; display: inline-block; margin-top: 4px; }
+  .out-footer { margin-top: 1.5rem; display: flex; gap: 10px; flex-wrap: wrap; }
+  .out-btn { font-family: var(--font-ui); font-size: 13px; padding: 7px 16px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-sec); cursor: pointer; transition: all 0.15s; }
+  .out-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* DAY DETAIL */
+  .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
+  .detail-left { border-right: 0.5px solid var(--border); padding: 1rem; background: var(--bg-sec); overflow-y: auto; }
+  .dl-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
+  .dl-row { display: flex; align-items: flex-start; gap: 9px; padding: 7px 9px; border-radius: var(--radius); cursor: pointer; transition: background 0.15s; margin-bottom: 2px; }
+  .dl-row:hover { background: var(--bg); }
+  .dl-row.active { background: var(--bg); border: 0.5px solid var(--border-med); }
+  .dl-d { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; flex-shrink: 0; }
+  .dl-d.intense { background: var(--green-dark); color: var(--green-light); }
+  .dl-d.medium { background: var(--green-light); color: var(--green-dark); }
+  .dl-d.rest { background: var(--green-pale); border: 0.5px solid var(--green-light); color: var(--green-dark); }
+  .dl-rb { flex: 1; padding-top: 1px; }
+  .dl-rn { font-size: 11px; color: var(--text-sec); }
+  .dl-rl { font-size: 12px; font-weight: 600; color: var(--text); }
+  .dl-rs { font-size: 11px; color: var(--text-sec); font-style: italic; }
+  .detail-right { padding: 1.25rem; overflow-y: auto; }
+  .det-header { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--border); }
+  .det-day-label { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; }
+  .det-loc { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 8px; font-family: var(--font); }
+  .det-meta-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .det-badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 600; }
+  .det-badge.rest { background: var(--green-pale); color: var(--green-dark); }
+  .det-badge.medium { background: var(--green-light); color: var(--green-dark); }
+  .det-badge.intense { background: var(--green-dark); color: var(--green-light); }
+  .det-stats { font-size: 12px; color: var(--text-sec); }
+  .det-cost-block { text-align: right; }
+  .det-cost-lbl { font-size: 10px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; }
+  .det-cost-val { font-size: 16px; font-weight: 600; color: var(--text); }
+  .actions-banner { background: var(--red-pale); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1rem; }
+  .actions-banner.all-done { background: var(--green-pale); }
+  .ab-title { font-size: 11px; font-weight: 600; color: var(--red-dark); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .actions-banner.all-done .ab-title { color: var(--green-dark); }
+  .ab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red-dark); }
+  .actions-banner.all-done .ab-dot { background: var(--green-dark); }
+  .action-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+  .action-item:last-child { margin-bottom: 0; }
+  .acheck { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--red); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .acheck.done { background: var(--green-dark); border-color: var(--green-dark); }
+  .acheck svg { width: 10px; height: 10px; color: white; opacity: 0; transition: opacity 0.15s; }
+  .acheck.done svg { opacity: 1; }
+  .aname { font-size: 12px; font-weight: 600; color: #791F1F; transition: all 0.15s; }
+  .aname.done { color: var(--green-dark); text-decoration: line-through; opacity: 0.7; }
+  .adesc { font-size: 11px; color: var(--red-dark); }
+  .adesc.done { color: var(--green); opacity: 0.7; }
+  .edit-bar { display: flex; justify-content: flex-end; margin-bottom: 1rem; gap: 8px; }
+  .edit-btn { font-size: 12px; color: var(--text-sec); border: 0.5px solid var(--border-med); border-radius: 20px; padding: 4px 12px; cursor: pointer; background: transparent; font-family: var(--font-ui); transition: all 0.15s; display: flex; align-items: center; gap: 5px; }
+  .edit-btn:hover { border-color: var(--green); color: var(--green); }
+  .edit-btn.on { background: var(--green-pale); border-color: var(--green); color: var(--green-dark); }
+  .edit-hint { font-size: 11px; color: var(--green-dark); background: var(--green-pale); border-radius: var(--radius); padding: 6px 10px; margin-bottom: 1rem; display: none; }
+  .edit-hint.show { display: block; }
+  .period { margin-bottom: 0.5rem; }
+  .period-lbl { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px; }
+  .period-line { flex: 1; height: 0.5px; background: var(--border); }
+  .timeline { position: relative; padding-left: 52px; }
+  .tl-line { position: absolute; left: 19px; top: 6px; bottom: 6px; width: 1px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-left { position: absolute; left: -52px; display: flex; flex-direction: column; align-items: center; gap: 3px; width: 44px; }
+  .tl-time { font-size: 11px; color: var(--text-sec); text-align: center; white-space: nowrap; }
+  .tl-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green); border: 2px solid var(--bg); position: relative; z-index: 1; }
+  .tl-dot.soft { background: var(--green-light); }
+  .tl-dot.rest-dot { background: var(--green-pale); border-color: var(--green-light); }
+  .tl-dot.food { background: var(--green-mid); }
+  .tl-transfer { margin-bottom: 12px; display: flex; align-items: center; gap: 8px; margin-left: -36px; padding-left: 36px; }
+  .trf-icon { width: 20px; height: 20px; border-radius: 50%; background: var(--bg-sec); border: 0.5px solid var(--border-med); display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 1; }
+  .trf-icon svg { width: 10px; height: 10px; color: var(--text-sec); }
+  .trf-txt { font-size: 11px; color: var(--text-sec); }
+  .act-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+  .act-name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .act-name[contenteditable=true] { border-bottom: 1px dashed var(--green); outline: none; }
+  .pill { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .pill.top10 { background: var(--amber-pale); color: var(--amber-dark); }
+  .pill.book { background: var(--red-pale); color: var(--red-dark); }
+  .pill.passion { background: var(--green-pale); color: var(--green-dark); }
+  .act-desc { font-size: 12px; color: var(--text-sec); line-height: 1.5; margin-bottom: 4px; }
+  .act-desc[contenteditable=true] { border-bottom: 1px dashed var(--green); outline: none; }
+  .act-detail-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .act-dur { font-size: 11px; color: var(--text-sec); }
+  .act-cost { font-size: 11px; color: var(--text-sec); background: var(--bg-sec); padding: 1px 7px; border-radius: 20px; }
+  .food-lbl { font-size: 10px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; }
+  .stops-block { background: var(--bg-sec); border-radius: var(--radius); padding: 10px 14px; margin-top: 1.25rem; }
+  .stops-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+  .stop-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-sec); margin-bottom: 5px; }
+  .stop-row:last-child { margin-bottom: 0; }
+  .snum { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+  .snum.s1 { background: var(--green-dark); color: white; }
+  .snum.s2 { background: var(--green-mid); color: white; }
+  .snum.s3 { background: var(--green-light); color: var(--green-dark); }
+  .snum.s4 { background: var(--green-pale); color: var(--green-dark); border: 0.5px solid var(--green-light); }
+  .map-note { font-size: 11px; color: var(--text-sec); margin-top: 8px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+  .det-footer { margin-top: 1.25rem; display: flex; gap: 10px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-logo" onclick="goHome()">Trip<span>Mind</span></div>
+  <div class="header-center" id="trip-label">
+    <div class="header-center-dot"></div>
+    <span>Japan · May 2025</span>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" id="share-btn" onclick="alert('Share link copied to clipboard!')">Share</button>
+    <button class="hbtn primary" onclick="goHome()">+ New trip</button>
+  </div>
+</header>
+
+<!-- WIZARD HEADER (form only) -->
+<div class="wizard-header" id="progress-bar-wrap">
+  <div class="wizard-steps">
+    <div class="wstep active" id="wstep-1" onclick="goToStep(1)">
+      <div class="wstep-num">1</div>
+      <div class="wstep-label">Your trip</div>
+    </div>
+    <div class="wstep-line"></div>
+    <div class="wstep inactive" id="wstep-2" onclick="goToStep(2)">
+      <div class="wstep-num">2</div>
+      <div class="wstep-label">Your style</div>
+    </div>
+    <div class="wstep-line"></div>
+    <div class="wstep inactive" id="wstep-3" onclick="goToStep(3)">
+      <div class="wstep-num">3</div>
+      <div class="wstep-label">Final details</div>
+    </div>
+  </div>
+</div>
+
+<div class="app-body">
+
+  <!-- SCREEN: FORM -->
+  <div class="screen active" id="screen-form">
+
+    <!-- STEP 1: YOUR TRIP -->
+    <div class="wizard-page active" id="wpage-1">
+      <div class="welcome-note"><b>Let's start with the basics.</b> Where are you going and when?</div>
+
+      <div class="form-section" data-sec="1">
+        <div class="section-label">Destination & dates</div>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="field"><label>Where do you want to go?</label><input type="text" placeholder="e.g. Japan, Lisbon, Patagonia" oninput="updateProgress()"></div>
+          <div class="field"><label>Number of travellers</label><input type="number" min="1" placeholder="2" oninput="updateProgress()"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Departure date</label>
+            <input type="date" onchange="updateProgress(); syncDatesWithPace()">
+            <div class="flight-block">
+              <div class="flight-toggle" onclick="toggleFlight('out')"><span class="flight-arrow" id="fa-out">▶</span> Add flight details</div>
+              <div class="flight-details" id="fd-out">
+                <div class="grid-2" style="margin-bottom:8px">
+                  <div class="field"><label>Landing time</label><input type="time"></div>
+                  <div class="field"><label>Arrival airport</label><input type="text" placeholder="e.g. NRT"></div>
+                </div>
+                <div class="flight-note">Landing time helps plan your first day — no activities before you arrive.</div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Return date</label>
+            <input type="date" onchange="updateProgress(); syncDatesWithPace()">
+            <div class="flight-block">
+              <div class="flight-toggle" onclick="toggleFlight('ret')"><span class="flight-arrow" id="fa-ret">▶</span> Add flight details</div>
+              <div class="flight-details" id="fd-ret">
+                <div class="grid-2" style="margin-bottom:8px">
+                  <div class="field"><label>Departure time</label><input type="time"></div>
+                  <div class="field"><label>Departure airport</label><input type="text" placeholder="e.g. NRT"></div>
+                </div>
+                <div class="flight-note">Departure time determines how much of your last day is usable.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard-nav">
+        <div></div>
+        <button class="wizard-next" onclick="goToStep(2)">Your style →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: YOUR STYLE -->
+    <div class="wizard-page" id="wpage-2">
+      <div class="welcome-note"><b>Tell us how you like to travel.</b> The more detail you share, the better your plan.</div>
+
+      <div class="form-section" data-sec="2">
+        <div class="section-label">Style — accommodation</div>
+        <div class="field"><label>Describe your ideal place to stay</label><textarea placeholder="e.g. Small boutique hotels with local character, away from tourist areas..." oninput="updateProgress()"></textarea></div>
+        <div class="tags" id="accom-tags">
+          <div class="tag" onclick="toggleTag(this,'accom')">Boutique hotel</div>
+          <div class="tag" onclick="toggleTag(this,'accom')">Luxury resort</div>
+          <div class="tag" onclick="toggleTag(this,'accom')">Local apartment</div>
+          <div class="tag" onclick="toggleTag(this,'accom')">Ryokan / riad</div>
+          <div class="tag" onclick="toggleTag(this,'accom')">Glamping</div>
+          <div class="tag" onclick="toggleTag(this,'accom')">Hostel / social</div>
+        </div>
+      </div>
+
+      <div class="form-section" data-sec="3">
+        <div class="section-label">Travel pace</div>
+        <div class="pace-block">
+          <div class="pace-onboarding"><b>How this works:</b> pick a preset for your overall travel style, then fine-tune individual days by selecting a pace and clicking the circles.</div>
+          <div class="pace-notice">This is your <b>ideal rhythm</b>, not a fixed schedule — TripMind flags any deviations in the plan.</div>
+          <div class="trip-length">
+            <span>Trip length:</span>
+            <button onclick="changeLen(-1)">−</button>
+            <span class="days-val" id="len-label">7 days</span>
+            <button onclick="changeLen(1)">+</button>
+          </div>
+          <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">Quick presets</div>
+          <div class="presets">
+            <div class="preset" onclick="applyPreset('full',this)">Full throttle</div>
+            <div class="preset on" onclick="applyPreset('balanced',this)">Balanced</div>
+            <div class="preset" onclick="applyPreset('dynamic',this)">Dynamic</div>
+            <div class="preset" onclick="applyPreset('relaxed',this)">Relaxed</div>
+            <div class="preset" onclick="applyPreset('zen',this)">Pure zen</div>
+          </div>
+          <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">Fine-tune day by day</div>
+          <div class="pace-legend">
+            <div class="legend-item sel" id="leg-intense"><div class="ldot intense"></div><span>Intense</span></div>
+            <div class="legend-item" id="leg-medium"><div class="ldot medium"></div><span>Medium</span></div>
+            <div class="legend-item" id="leg-rest"><div class="ldot rest"></div><span>Rest</span></div>
+            <span style="font-size:11px;color:var(--text-sec)">← select then click days</span>
+          </div>
+          <div class="days-grid" id="days-grid"></div>
+          <div class="pace-summary" id="pace-summary"></div>
+        </div>
+      </div>
+
+      <div class="form-section" data-sec="4-exp">
+        <div class="section-label">Experience style</div>
+        <div class="field"><label>What kind of experiences matter most to you?</label><textarea placeholder="e.g. I want to feel like a local, avoid tourist traps, one unexpected adventure per day..." oninput="updateProgress()"></textarea></div>
+        <div class="tags" style="margin-top:10px">
+          <div class="tag" onclick="this.classList.toggle('on')">Off-the-beaten-path</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Cultural immersion</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Nature & outdoors</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Architecture</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Nightlife</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Adventure sports</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Wellness & spa</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Art & museums</div>
+        </div>
+      </div>
+
+      <div class="form-section" data-sec="4b">
+        <div class="section-label">Style — food & drink</div>
+        <div class="field"><label>Describe your food philosophy when travelling</label><textarea placeholder="e.g. Food is central — I always research the best local spots and I'm open to trying anything once..." oninput="updateProgress()"></textarea></div>
+        <div class="tags">
+          <div class="tag" onclick="this.classList.toggle('on')">Street food</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Fine dining</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Local markets</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Cooking classes</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Wine & craft drinks</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Michelin starred</div>
+        </div>
+        <div class="field" style="margin-top:12px;max-width:360px"><label>Dietary restrictions</label><input type="text" placeholder="e.g. vegetarian, halal, no shellfish"></div>
+      </div>
+
+      <div class="form-section" data-sec="5">
+        <div class="section-label">Passions & personal interests</div>
+        <div class="field"><label>Tell us about your passions — the more specific, the better</label><textarea placeholder="e.g. I'm obsessed with sauna culture and ice baths — finding a great sauna is a must for any trip..." oninput="updateProgress()"></textarea></div>
+        <div class="tags" id="passion-tags">
+          <div class="tag" onclick="this.classList.toggle('on')">Sauna & ice bath</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Surf</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Photography</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Hiking</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Yoga & meditation</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Cycling</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Jazz & live music</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Football</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Scuba diving</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Rock climbing</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Craft beer</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Vintage & markets</div>
+        </div>
+        <div class="tag-add"><input type="text" id="custom-tag-input" placeholder="Add your own interest..."><button onclick="addTag()">+ Add</button></div>
+      </div>
+
+      <div class="wizard-nav">
+        <button class="wizard-back" onclick="goToStep(1)">← Your trip</button>
+        <button class="wizard-next" onclick="goToStep(3)">Final details →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: FINAL DETAILS -->
+    <div class="wizard-page" id="wpage-3">
+      <div class="welcome-note"><b>Almost there.</b> A few practical details to sharpen your plan.</div>
+
+      <div class="form-section" data-sec="6">
+        <div class="section-label">Logistics</div>
+        <div class="grid-2" style="margin-bottom:12px">
+          <div class="field"><label>Have you been here before?</label>
+            <select onchange="updateProgress()">
+              <option value="">Select...</option>
+              <option>First time — surprise me</option>
+              <option>Been once, want to go deeper</option>
+              <option>Know it well, want hidden gems</option>
+            </select>
+          </div>
+          <div class="field"><label>How do you like to move around?</label>
+            <select onchange="updateProgress()">
+              <option value="">Select...</option>
+              <option>Public transport only</option>
+              <option>Rent a car</option>
+              <option>Mix of both</option>
+              <option>Walking & cycling focus</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>Anything else we should know?</label><textarea placeholder="e.g. travelling with kids, anniversary trip, wheelchair access..." oninput="updateProgress()"></textarea></div>
+      </div>
+
+      <div class="form-section" data-sec="7">
+        <div class="section-label">Budget</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Budget per person (EUR)</label>
+            <input type="number" id="budget-input" placeholder="e.g. 1500" oninput="updateBudget()">
+            <div style="font-size:12px;color:var(--text-sec);margin-top:4px;" id="budget-total"></div>
+          </div>
+          <div class="field"><label>Budget focus</label>
+            <select onchange="updateProgress()">
+              <option value="">Select...</option>
+              <option>Balanced across all categories</option>
+              <option>Splurge on accommodation</option>
+              <option>Splurge on experiences</option>
+              <option>Splurge on food & drink</option>
+            </select>
+          </div>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-left">
+            <span class="toggle-lbl">Flights already booked</span>
+            <span class="toggle-sub">Exclude flight costs from the budget estimate</span>
+          </div>
+          <label class="tog"><input type="checkbox" onchange="toggleFlights()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+        </div>
+        <div class="flights-confirm" id="flights-confirm">Flight costs excluded — budget applies to accommodation, transport, experiences and food only.</div>
+      </div>
+
+      <div class="wizard-nav">
+        <button class="wizard-back" onclick="goToStep(2)">← Your style</button>
+        <button class="cta-btn" onclick="showLoading()">Generate my trip plan →</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN: LOADING -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-wrap">
+      <div class="globe-scene">
+        <div class="globe-pulse"></div>
+        <div class="globe-pulse gp2"></div>
+        <div class="globe-pulse gp3"></div>
+        <div class="globe">
+          <div class="land l1"></div><div class="land l2"></div><div class="land l3"></div>
+          <div class="land l4"></div><div class="land l5"></div>
+          <div class="gline gl1"></div><div class="gline gl2"></div>
+          <div class="gshine"></div>
+        </div>
+      </div>
+      <div class="steps-list" id="steps-list">
+        <div class="lstep" id="ls0"><div class="step-ind"></div><span class="step-txt">Reading your travel preferences</span></div>
+        <div class="lstep" id="ls1"><div class="step-ind"></div><span class="step-txt">Analyzing your passions & interests</span></div>
+        <div class="lstep" id="ls2"><div class="step-ind"></div><span class="step-txt">Finding top experiences in Japan</span></div>
+        <div class="lstep" id="ls3"><div class="step-ind"></div><span class="step-txt">Building your day-by-day rhythm</span></div>
+        <div class="lstep" id="ls4"><div class="step-ind"></div><span class="step-txt">Selecting restaurants & hidden gems</span></div>
+        <div class="lstep" id="ls5"><div class="step-ind"></div><span class="step-txt">Calculating routes & travel times</span></div>
+        <div class="lstep" id="ls6"><div class="step-ind"></div><span class="step-txt">Estimating your budget breakdown</span></div>
+        <div class="lstep" id="ls7"><div class="step-ind"></div><span class="step-txt">Finalising your perfect plan</span></div>
+      </div>
+      <div class="load-progress">
+        <div class="lp-track"><div class="lp-fill" id="lp-fill"></div></div>
+        <div class="lp-labels"><span id="lp-text">Getting started...</span><span id="lp-pct">0%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: OUTPUT -->
+  <div class="screen" id="screen-output">
+    <div class="breadcrumb">
+      <span class="bc-link" onclick="goHome()">Form</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-active">Your plan</span>
+    </div>
+
+    <div class="wow-block">
+      <div class="wow-ready"><div class="wow-dot"></div>Your plan is ready</div>
+      <div class="wow-headline">Seven days of contrasts — ancient temples, forest silence, and Tokyo's electric nights</div>
+      <div class="wow-meta">
+        <span>Japan</span><span>·</span><span>12–19 May 2025</span><span>·</span><span>2 travellers</span><span>·</span><span>7 days</span>
+      </div>
+    </div>
+
+    <div class="out-section-title">Plan overview</div>
+
+    <div class="sb-row" id="sb-cost">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Estimated total cost</div>
+        <div class="sb-value">€3,240 for 2 travellers — €1,620 per person</div>
+        <div class="sb-note">Flights €900 · Accommodation €1,100 · Experiences €640 · Food €600</div>
+        <div class="sb-alert">Slightly above your €3,000 budget — 3 adjustments available</div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="sb-row" id="sb-cities">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2C5.8 2 4 3.8 4 6c0 3 4 8 4 8s4-5 4-8c0-2.2-1.8-4-4-4z"/><circle cx="8" cy="6" r="1.5"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Cities & overnight stays</div>
+        <div class="sb-value">3 cities — Tokyo (3 nights), Hakone (1 night), Kyoto/Nara (2 nights)</div>
+        <div class="sb-note">Average 2.3 nights per location — no daily moves required</div>
+        <div class="sb-good">Good rhythm — you unpack only 3 times in 7 days</div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="sb-row" id="sb-intensity">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2 2"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Trip intensity</div>
+        <div class="pace-inner">
+          <div class="dots-row">
+            <div class="out-dot-wrap"><div class="out-dot medium">D1</div><div class="out-dlabel">Mon</div></div>
+            <div class="out-dot-wrap"><div class="out-dot rest">D2</div><div class="out-dlabel">Tue</div></div>
+            <div class="out-dot-wrap"><div class="out-dot medium">D3</div><div class="out-dlabel">Wed</div></div>
+            <div class="out-dot-wrap"><div class="out-dot intense">D4</div><div class="out-dlabel">Thu</div></div>
+            <div class="out-dot-wrap"><div class="out-dot intense">D5</div><div class="out-dlabel">Fri</div></div>
+            <div class="out-dot-wrap"><div class="out-dot intense">D6</div><div class="out-dlabel">Sat</div></div>
+            <div class="out-dot-wrap"><div class="out-dot rest">D7</div><div class="out-dlabel">Sun</div></div>
+          </div>
+          <div class="out-legend">
+            <div class="out-li"><div class="out-ldot" style="background:var(--green-dark)"></div>Intense</div>
+            <div class="out-li"><div class="out-ldot" style="background:var(--green-light)"></div>Medium</div>
+            <div class="out-li"><div class="out-ldot" style="background:var(--green-pale);border:0.5px solid var(--green-light)"></div>Rest</div>
+          </div>
+          <div class="pace-alert">Days 4–5 are both intense — two unmissable experiences on consecutive days. Your preference was balanced.</div>
+        </div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="sb-row" id="sb-transport">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M10 5l3 3-3 3"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Transport</div>
+        <div class="sb-value" style="margin-top:4px">~780 km total · 3 legs</div>
+        <div class="sb-note">Tokyo → Hakone · Hakone → Kyoto · Kyoto → Nara</div>
+        <div class="transport-row">
+          <div class="tr-pill req"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/></svg>Rental car</div>
+          <span style="color:var(--text-sec)">→</span>
+          <div class="tr-pill rec"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="7" rx="1.5"/><path d="M4 12v1M12 12v1M1 9h14"/><circle cx="4" cy="8" r="0.8" fill="currentColor"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>Shinkansen — faster & cheaper</div>
+        </div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="sb-row" id="sb-top10">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Top 10 experiences</div>
+        <div class="sb-value">7 out of 10 included</div>
+        <div class="sb-note">Missing: Mt. Fuji climb · Hiroshima/Miyajima · Osaka street food</div>
+        <div class="top10-bar">
+          <div class="t10 on">1</div><div class="t10 on">2</div><div class="t10 on">3</div><div class="t10 on">4</div>
+          <div class="t10 on">5</div><div class="t10 off">6</div><div class="t10 on">7</div>
+          <div class="t10 off">8</div><div class="t10 on">9</div><div class="t10 off">10</div>
+        </div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="sb-row" id="sb-passions">
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M10 10l3 3"/></svg></div>
+      <div class="sb-body">
+        <div class="sb-label">Your passions — integration</div>
+        <div class="sb-value">Sauna & ice bath, jazz & live music, craft beer</div>
+        <div class="sb-note">Onsen at Hakone ryokan (day 3) · Jazz bar in Shimokitazawa (day 6) · Craft beer at Yona Yona (day 2)</div>
+        <div class="sb-good">All 3 personal interests integrated in the plan</div>
+      </div>
+      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="out-section-title">Day by day</div>
+
+    <div class="days-section">
+      <div class="day-list-row" onclick="showDetail(0)"><div class="dl-dot medium">D1</div><div class="dl-body"><div class="dl-meta">Day 1 · Mon 12 May</div><div class="dl-loc">Tokyo · Shinjuku</div><div class="dl-sub">Arrival, neighbourhood walk, yakitori alley at dusk</div></div></div>
+      <div class="day-list-row" onclick="showDetail(1)"><div class="dl-dot rest">D2</div><div class="dl-body"><div class="dl-meta">Day 2 · Tue 13 May</div><div class="dl-loc">Tokyo · Asakusa & Yanaka</div><div class="dl-sub">Temples at dawn, vintage streets, slow afternoon</div></div></div>
+      <div class="day-list-row" onclick="showDetail(2)"><div class="dl-dot medium">D3</div><div class="dl-body"><div class="dl-meta">Day 3 · Wed 14 May</div><div class="dl-loc">Hakone · National Park</div><div class="dl-sub">Volcanic valley, ropeway, ryokan with private onsen</div></div></div>
+      <div class="day-list-row" onclick="showDetail(3)"><div class="dl-dot intense">D4</div><div class="dl-body"><div class="dl-meta">Day 4 · Thu 15 May</div><div class="dl-loc">Kyoto · Arashiyama & Fushimi Inari</div><div class="dl-sub">Bamboo grove at dawn, full hike up 10,000 torii gates</div><div class="dev-pill">Heads up: two intense days in a row</div></div></div>
+      <div class="day-list-row" onclick="showDetail(4)"><div class="dl-dot intense">D5</div><div class="dl-body"><div class="dl-meta">Day 5 · Fri 16 May</div><div class="dl-loc">Nara · Nara Park</div><div class="dl-sub">Giant Buddha, deer park, refined garden off the tourist path</div></div></div>
+      <div class="day-list-row" onclick="showDetail(5)"><div class="dl-dot intense">D6</div><div class="dl-body"><div class="dl-meta">Day 6 · Sat 17 May</div><div class="dl-loc">Tokyo · Shibuya & Shimokitazawa</div><div class="dl-sub">Crossing, museum, vintage shops, jazz bar, craft ramen</div></div></div>
+      <div class="day-list-row" onclick="showDetail(6)"><div class="dl-dot rest">D7</div><div class="dl-body"><div class="dl-meta">Day 7 · Sun 18 May</div><div class="dl-loc">Tokyo · Daikanyama</div><div class="dl-sub">Slow coffee, world's most beautiful bookshop, departure</div></div></div>
+    </div>
+
+    <div class="out-footer">
+      <button class="out-btn" onclick="goHome()">← Edit preferences</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: DAY DETAIL -->
+  <div class="screen wide" id="screen-detail">
+    <div class="breadcrumb">
+      <span class="bc-link" onclick="goHome()">Form</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-link" onclick="showOutput()">Your plan</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-active" id="det-breadcrumb">Day 2 · Asakusa</span>
+    </div>
+
+    <div class="detail-layout">
+      <div class="detail-left">
+        <div class="dl-title">Day by day</div>
+        <div class="dl-row" onclick="showDetail(0)"><div class="dl-d medium">D1</div><div class="dl-rb"><div class="dl-rn">Day 1 · Mon 12 May</div><div class="dl-rl">Tokyo · Shinjuku</div><div class="dl-rs">Arrival, yakitori at dusk</div></div></div>
+        <div class="dl-row active" id="dlr-1" onclick="showDetail(1)"><div class="dl-d rest">D2</div><div class="dl-rb"><div class="dl-rn">Day 2 · Tue 13 May</div><div class="dl-rl">Tokyo · Asakusa</div><div class="dl-rs">Temples at dawn, vintage streets</div></div></div>
+        <div class="dl-row" onclick="showDetail(2)"><div class="dl-d medium">D3</div><div class="dl-rb"><div class="dl-rn">Day 3 · Wed 14 May</div><div class="dl-rl">Hakone · National Park</div><div class="dl-rs">Volcanic valley, onsen ryokan</div></div></div>
+        <div class="dl-row" onclick="showDetail(3)"><div class="dl-d intense">D4</div><div class="dl-rb"><div class="dl-rn">Day 4 · Thu 15 May</div><div class="dl-rl">Kyoto · Arashiyama</div><div class="dl-rs">Bamboo grove, torii gates</div></div></div>
+        <div class="dl-row" onclick="showDetail(4)"><div class="dl-d intense">D5</div><div class="dl-rb"><div class="dl-rn">Day 5 · Fri 16 May</div><div class="dl-rl">Nara · Nara Park</div><div class="dl-rs">Giant Buddha, deer park</div></div></div>
+        <div class="dl-row" onclick="showDetail(5)"><div class="dl-d intense">D6</div><div class="dl-rb"><div class="dl-rn">Day 6 · Sat 17 May</div><div class="dl-rl">Tokyo · Shimokitazawa</div><div class="dl-rs">Jazz bar, craft ramen</div></div></div>
+        <div class="dl-row" onclick="showDetail(6)"><div class="dl-d rest">D7</div><div class="dl-rb"><div class="dl-rn">Day 7 · Sun 18 May</div><div class="dl-rl">Tokyo · Daikanyama</div><div class="dl-rs">Slow coffee, departure</div></div></div>
+      </div>
+
+      <div class="detail-right">
+        <div class="det-header">
+          <div class="det-day-label">Day 2 · Tuesday 13 May</div>
+          <div class="det-loc">Tokyo · Asakusa & Yanaka</div>
+          <div class="det-meta-row">
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="det-badge rest">Rest</span>
+              <span class="det-stats">6 stops · ~8h · mostly on foot</span>
+            </div>
+            <div class="det-cost-block">
+              <div class="det-cost-lbl">Est. day cost</div>
+              <div class="det-cost-val">~€95 / person</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-banner" id="actions-banner">
+          <div class="ab-title"><div class="ab-dot" id="ab-dot"></div><span id="ab-title">Actions required for today</span></div>
+          <div class="action-item">
+            <div class="acheck" id="ac1" onclick="tickAction(1)"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg></div>
+            <div>
+              <div class="aname" id="an1">Sometaro (dinner)</div>
+              <div class="adesc" id="ad1">Book 1 day in advance on their website before your trip</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-bar">
+          <button class="edit-btn" id="edit-btn" onclick="toggleEdit()">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg>
+            Edit this day
+          </button>
+        </div>
+        <div class="edit-hint" id="edit-hint">Click any activity name or description to edit it directly.</div>
+
+        <div class="period">
+          <div class="period-lbl">Morning <div class="period-line"></div></div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">06:30</div><div class="tl-dot"></div></div>
+              <div class="act-name-row"><span class="act-name editable">Senso-ji Temple</span><span class="pill top10">Top 10 #2</span></div>
+              <div class="act-desc editable">Tokyo's oldest temple — at 6:30am the Kaminarimon gate is almost empty. Worth arriving before the crowds.</div>
+              <div class="act-detail-row"><span class="act-dur">~1h 30min</span><span class="act-cost">Free entry</span></div>
+            </div>
+            <div class="tl-transfer">
+              <div class="trf-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/><circle cx="3" cy="6" r="0.6" fill="currentColor"/><circle cx="9" cy="6" r="0.6" fill="currentColor"/></svg></div>
+              <div class="trf-txt">12 min · Ginza line to Nezu</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">08:30</div><div class="tl-dot soft"></div></div>
+              <div class="act-name-row"><span class="act-name editable">Yanaka Cemetery & old town</span></div>
+              <div class="act-desc editable">Peaceful morning walk through one of Tokyo's few pre-war neighbourhoods. Follow the narrow shopping street after.</div>
+              <div class="act-detail-row"><span class="act-dur">~1h</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="period">
+          <div class="period-lbl">Lunch <div class="period-line"></div></div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">10:00</div><div class="tl-dot food"></div></div>
+              <div class="food-lbl"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--green-mid)"><path d="M5 2v5a3 3 0 006 0V2M8 10v4M3 2v4"/></svg>Recommended lunch</div>
+              <div class="act-name-row"><span class="act-name editable">Yanaka Ginza — street food walk</span></div>
+              <div class="act-desc editable">Old shopping street with menchi katsu, croquettes and local sweets.</div>
+              <div class="act-detail-row"><span class="act-cost">~€10</span><span class="act-dur">No reservation needed</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="period">
+          <div class="period-lbl">Afternoon <div class="period-line"></div></div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">13:30</div><div class="tl-dot soft"></div></div>
+              <div class="act-name-row"><span class="act-name editable">Ameyoko Market</span></div>
+              <div class="act-desc editable">Bustling open-air market under the train tracks — fresh food, vintage clothing, street snacks.</div>
+              <div class="act-detail-row"><span class="act-dur">~1h</span></div>
+            </div>
+            <div class="tl-transfer">
+              <div class="trf-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="8" r="1.5"/><path d="M4 4h4v3a2 2 0 01-4 0V4z"/><path d="M6 2v2"/></svg></div>
+              <div class="trf-txt">8 min on foot</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">15:00</div><div class="tl-dot"></div></div>
+              <div class="act-name-row"><span class="act-name editable">Yona Yona Beer Works</span><span class="pill passion">Your passion</span></div>
+              <div class="act-desc editable">One of Tokyo's best craft tap rooms with rotating Japanese ales. Perfect slow afternoon stop.</div>
+              <div class="act-detail-row"><span class="act-dur">~1h 30min</span><span class="act-cost">~€15</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="period">
+          <div class="period-lbl">Dinner <div class="period-line"></div></div>
+          <div class="timeline">
+            <div class="tl-line"></div>
+            <div class="tl-item">
+              <div class="tl-left"><div class="tl-time">19:00</div><div class="tl-dot food"></div></div>
+              <div class="food-lbl"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--green-mid)"><path d="M5 2v5a3 3 0 006 0V2M8 10v4M3 2v4"/></svg>Recommended dinner</div>
+              <div class="act-name-row"><span class="act-name editable">Sometaro — okonomiyaki</span><span class="pill book">Book ahead</span></div>
+              <div class="act-desc editable">Traditional do-it-yourself okonomiyaki in Asakusa. Book 1 day in advance on their website.</div>
+              <div class="act-detail-row"><span class="act-cost">~€18 / person</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stops-block">
+          <div class="stops-title">Today's stops</div>
+          <div class="stop-row"><div class="snum s1">1</div>Senso-ji Temple · Asakusa</div>
+          <div class="stop-row"><div class="snum s2">2</div>Yanaka Cemetery & old town</div>
+          <div class="stop-row"><div class="snum s3">3</div>Yanaka Ginza street food</div>
+          <div class="stop-row"><div class="snum s3">4</div>Ameyoko Market · Ueno</div>
+          <div class="stop-row"><div class="snum s4">5</div>Yona Yona Beer Works</div>
+          <div class="stop-row"><div class="snum s4">6</div>Sometaro · Asakusa</div>
+          <div class="map-note">Interactive map coming in the next version — stops will be plotted on Google Maps.</div>
+        </div>
+
+        <div class="det-footer">
+          <button class="out-btn" onclick="showOutput()">← Back to plan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// SCREEN MANAGEMENT
+let currentStep = 1;
+function goHome() { showScreen('form'); goToStep(1); }
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  const isForm = name === 'form';
+  const isLoading = name === 'loading';
+  document.getElementById('progress-bar-wrap').style.display = isForm ? 'block' : 'none';
+  document.getElementById('trip-label').classList.toggle('visible', !isForm && !isLoading);
+  document.getElementById('share-btn').classList.toggle('visible', !isForm && !isLoading);
+  window.scrollTo(0, 0);
+}
+function goToStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.wizard-page').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('wstep-' + i);
+    if (!el) continue;
+    el.classList.remove('active', 'done', 'inactive');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+    else el.classList.add('inactive');
+  }
+  document.querySelectorAll('.wstep-line').forEach((l, i) => l.classList.toggle('done', i + 1 < n));
+  if (n === 2) { syncDatesWithPace(); renderDays(); }
+  window.scrollTo(0, 0);
+}
+function showOutput() { showScreen('output'); }
+function showLoading() {
+  const formData = collectFormData();
+  window.tripPlan = null;
+  showScreen('loading');
+  runLoadingSteps();
+  generatePlan(formData);
+}
+function showDetail(dayIdx) {
+  if (window.tripPlan) { showDetailFromPlan(dayIdx); return; }
+  showScreen('detail');
+  document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === dayIdx));
+}
+// COLLECT FORM DATA
+function collectFormData() {
+  const get = id => document.getElementById(id)?.value || '';
+  const allTags = (containerId) => Array.from(document.querySelectorAll(`#${containerId} .tag.on`)).map(t => t.textContent);
+  const allTagsInSection = (sec) => Array.from(sec.querySelectorAll('.tag.on')).map(t => t.textContent);
+  const sections = document.querySelectorAll('.form-section');
+
+  // Destination & dates
+  const destSection = document.querySelector('[data-sec="1"]');
+  const inputs1 = destSection.querySelectorAll('input');
+  const destination = inputs1[0]?.value || '';
+  const travellers = inputs1[1]?.value || '2';
+  const depDate = inputs1[2]?.value || '';
+  const retDate = inputs1[3]?.value || '';
+  const landingTime = inputs1[4]?.value || '';
+  const arrAirport = inputs1[5]?.value || '';
+  const depTime = inputs1[6]?.value || '';
+  const depAirport = inputs1[7]?.value || '';
+
+  // Accommodation
+  const accSec = document.querySelector('[data-sec="2"]');
+  const accText = accSec.querySelector('textarea')?.value || '';
+  const accTags = allTagsInSection(accSec);
+
+  // Travel pace
+  const paceProfile = days.map((d,i) => 'Day ' + (i+1) + ': ' + d).join(', ');
+
+  // Experience style
+  const expSec = document.querySelector('[data-sec="4-exp"]');
+  const expText = expSec.querySelector('textarea')?.value || '';
+  const expTags = allTagsInSection(expSec);
+
+  // Food
+  const foodSec = document.querySelector('[data-sec="4b"]');
+  const foodText = foodSec?.querySelector('textarea')?.value || '';
+  const foodTags = foodSec ? allTagsInSection(foodSec) : [];
+  const dietaryInput = foodSec?.querySelector('input[type=text]')?.value || '';
+
+  // Passions
+  const passionSec = document.querySelector('[data-sec="5"]');
+  const passionText = passionSec.querySelector('textarea')?.value || '';
+  const passionTags = allTagsInSection(passionSec);
+
+  // Logistics
+  const logSec = document.querySelector('[data-sec="6"]');
+  const logSelects = logSec.querySelectorAll('select');
+  const priorVisit = logSelects[0]?.value || '';
+  const transport = logSelects[1]?.value || '';
+  const logNotes = logSec.querySelector('textarea')?.value || '';
+
+  // Budget
+  const budgetVal = document.getElementById('budget-input')?.value || '';
+  const flightsBooked = document.querySelector('.tog input')?.checked || false;
+  const budgetSec = document.querySelector('[data-sec="7"]');
+  const budgetFocus = budgetSec?.querySelectorAll('select')[0]?.value || '';
+  const budgetTotal = budgetVal && travellers ? parseInt(budgetVal) * parseInt(travellers) : '';
+
+  return {
+    destination, travellers, depDate, retDate, landingTime, arrAirport, depTime, depAirport,
+    accText, accTags, paceProfile, numDays,
+    expText, expTags, foodText, foodTags, dietary: dietaryInput,
+    passionText, passionTags, priorVisit, transport, logNotes,
+    budget: budgetVal, budgetTotal, flightsBooked, budgetFocus
+  };
+}
+
+// BUILD PROMPT
+function buildPrompt(d) {
+  const prefs = [
+    'Destination: ' + (d.destination || 'not specified'),
+    'Travellers: ' + d.travellers,
+    'Dates: ' + (d.depDate || 'flexible') + ' to ' + (d.retDate || 'flexible'),
+    'Landing time: ' + (d.landingTime || 'not specified') + ' at ' + (d.arrAirport || 'unknown airport'),
+    'Departure time: ' + (d.depTime || 'not specified') + ' from ' + (d.depAirport || 'unknown airport'),
+    'Trip length: ' + d.numDays + ' days',
+    'Accommodation: ' + (d.accText || 'not specified') + (d.accTags.length ? ' | ' + d.accTags.join(', ') : ''),
+    'Travel pace: ' + d.paceProfile,
+    'Experience style: ' + (d.expText || 'not specified') + (d.expTags.length ? ' | ' + d.expTags.join(', ') : ''),
+    'Food: ' + (d.foodText || 'not specified') + (d.foodTags.length ? ' | ' + d.foodTags.join(', ') : '') + (d.dietary ? ' | Dietary: ' + d.dietary : ''),
+    'Passions: ' + (d.passionText || 'not specified') + (d.passionTags.length ? ' | ' + d.passionTags.join(', ') : ''),
+    'Prior visit: ' + (d.priorVisit || 'not specified'),
+    'Transport preference: ' + (d.transport || 'not specified'),
+    'Notes: ' + (d.logNotes || 'none'),
+    'Budget: €' + (d.budget || 'not specified') + ' per person (€' + (d.budgetTotal || 'not specified') + ' total) ' + (d.flightsBooked ? '— flights already booked' : ''),
+    'Budget focus: ' + (d.budgetFocus || 'balanced')
+  ].join('\n- ');
+
+  const jsonStructure = '{\n' +
+    '  "headline": "Evocative title max 12 words",\n' +
+    '  "meta": {"destination": "str", "dates": "str", "travellers": 2, "days": 7},\n' +
+    '  "summary": {\n' +
+    '    "cost": {"total": 3000, "perPerson": 1500, "breakdown": "Flights €X · Hotels €X · Exp €X · Food €X", "alert": "str or null"},\n' +
+    '    "cities": {"value": "3 cities — City (2 nights)", "note": "logistics note", "message": "positive note"},\n' +
+    '    "intensity": {"days": [{"day": 1, "intensity": "medium", "dayName": "Mon"}], "deviationNote": "str or null"},\n' +
+    '    "transport": {"totalKm": 500, "legs": "City A → City B", "requested": "car", "recommended": "train", "alert": "reason or null"},\n' +
+    '    "top10": {"covered": 7, "total": 10, "missing": "Exp A · Exp B", "items": [{"num": 1, "name": "Exp name", "covered": true}]},\n' +
+    '    "passions": {"identified": ["sauna"], "integrations": [{"passion": "sauna", "day": 3, "where": "Venue name"}], "allIntegrated": true}\n' +
+    '  },\n' +
+    '  "days": [{\n' +
+    '    "dayNum": 1, "date": "Mon 12 May", "intensity": "medium",\n' +
+    '    "location": "City · Neighbourhood", "subtitle": "max 6 words",\n' +
+    '    "deviationNote": "str or null", "dayCost": 120,\n' +
+    '    "actions": [{"name": "Venue", "description": "What to book and when"}],\n' +
+    '    "activities": [{\n' +
+    '      "time": "09:00", "type": "activity", "name": "Place name",\n' +
+    '      "description": "One specific sentence.",\n' +
+    '      "duration": "1h", "cost": "€15 or Free or null",\n' +
+    '      "pills": ["top10_2", "book_ahead", "sauna"],\n' +
+    '      "transferAfter": {"mode": "walk", "minutes": 10, "note": "route"}\n' +
+    '    }]\n' +
+    '  }]\n' +
+    '}';
+
+  return 'You are TripMind, an expert AI travel advisor. Generate a complete personalised travel plan.\n\n' +
+    'RESPOND ONLY WITH VALID JSON — no preamble, no markdown, no extra text.\n\n' +
+    'USER PREFERENCES:\n- ' + prefs + '\n\n' +
+    'RULES:\n' +
+    '1. Use ALL preferences — never ignore a field\n' +
+    '2. Integrate passions explicitly — find real venues matching each passion\n' +
+    '3. Pace profile is a PREFERENCE not a constraint — flag deviations briefly\n' +
+    '4. Be specific: real place names, real restaurants, real experiences\n' +
+    '5. Keep descriptions to 1 sentence max per activity\n' +
+    '6. Max 4 activities per day (not counting transfers)\n\n' +
+    'RESPOND WITH THIS JSON STRUCTURE (follow exactly):\n' +
+    jsonStructure;
+}
+
+// RENDER OUTPUT FROM AI DATA
+function renderOutput(plan) {
+  try {
+    // Header trip label
+    document.getElementById('trip-label').querySelector('span').textContent =
+      (plan.meta.destination || 'Your trip') + ' · ' + (plan.meta.dates || '');
+
+    // Wow block
+    document.querySelector('.wow-headline').textContent = plan.headline;
+    document.querySelector('.wow-meta').innerHTML =
+      `<span>${plan.meta.destination}</span><span>·</span><span>${plan.meta.dates}</span><span>·</span><span>${plan.meta.travellers} traveller${plan.meta.travellers > 1 ? 's' : ''}</span><span>·</span><span>${plan.meta.days} days</span>`;
+
+    // Cost
+    const cost = plan.summary.cost;
+    document.querySelector('#sb-cost .sb-value').textContent =
+      `€${cost.total.toLocaleString()} for ${plan.meta.travellers} travellers — €${cost.perPerson.toLocaleString()} per person`;
+    document.querySelector('#sb-cost .sb-note').textContent = cost.breakdown;
+    const costAlert = document.querySelector('#sb-cost .sb-alert');
+    const costGood = document.querySelector('#sb-cost .sb-good');
+    if (cost.alert) {
+      if (costAlert) { costAlert.textContent = cost.alert; costAlert.style.display = 'inline-block'; }
+      if (costGood) costGood.style.display = 'none';
+    } else {
+      if (costAlert) costAlert.style.display = 'none';
+      if (costGood) { costGood.textContent = 'Within your budget'; costGood.style.display = 'inline-block'; }
+    }
+
+    // Cities
+    const cities = plan.summary.cities;
+    document.querySelector('#sb-cities .sb-value').textContent = cities.value;
+    document.querySelector('#sb-cities .sb-note').textContent = cities.note;
+    const citiesStatus = document.querySelector('#sb-cities .sb-good') || document.querySelector('#sb-cities .sb-alert');
+    if (citiesStatus) citiesStatus.textContent = cities.message;
+
+    // Intensity dots
+    document.querySelector('.dots-row').innerHTML = plan.summary.intensity.days.map(d =>
+      `<div class="out-dot-wrap"><div class="out-dot ${d.intensity}">D${d.day}</div><div class="out-dlabel">${d.dayName}</div></div>`
+    ).join('');
+    const paceAlert = document.querySelector('.pace-alert');
+    if (paceAlert) {
+      paceAlert.textContent = plan.summary.intensity.deviationNote || '';
+      paceAlert.style.display = plan.summary.intensity.deviationNote ? 'block' : 'none';
+    }
+
+    // Transport
+    const tr = plan.summary.transport;
+    document.querySelector('#sb-transport .sb-value').textContent = `~${tr.totalKm} km total`;
+    document.querySelector('#sb-transport .sb-note').textContent = tr.legs;
+    document.querySelector('.transport-row').innerHTML = `
+      <div class="tr-pill ${tr.requested === tr.recommended ? 'rec' : 'req'}">${tr.requested}</div>
+      ${tr.requested !== tr.recommended ? `<span style="color:var(--text-sec)">→</span><div class="tr-pill rec">${tr.recommended}${tr.alert ? ' — ' + tr.alert : ''}</div>` : ''}`;
+
+    // Top 10
+    const t10 = plan.summary.top10;
+    document.querySelector('#sb-top10 .sb-value').textContent = `${t10.covered} out of ${t10.total} included`;
+    document.querySelector('#sb-top10 .sb-note').textContent = t10.missing ? `Missing: ${t10.missing}` : 'All top experiences covered';
+    document.querySelector('.top10-bar').innerHTML = t10.items.map(i =>
+      `<div class="t10 ${i.covered ? 'on' : 'off'}" title="${i.name}">${i.num}</div>`
+    ).join('');
+
+    // Passions
+    const pass = plan.summary.passions;
+    document.querySelector('#sb-passions .sb-value').textContent = pass.identified.join(', ');
+    document.querySelector('#sb-passions .sb-note').textContent =
+      pass.integrations.map(p => `${p.passion} → ${p.where} (day ${p.day})`).join(' · ');
+    const passGood = document.querySelector('#sb-passions .sb-good');
+    if (passGood) passGood.textContent = pass.allIntegrated ? 'All personal interests integrated in the plan' : 'Some interests integrated — see day details';
+
+    // Day by day list
+    document.querySelector('.days-section').innerHTML = plan.days.map((d, i) => `
+      <div class="day-list-row" onclick="showDetailFromPlan(${i})">
+        <div class="dl-dot ${d.intensity}">D${d.dayNum}</div>
+        <div class="dl-body">
+          <div class="dl-meta">Day ${d.dayNum} · ${d.date}</div>
+          <div class="dl-loc">${d.location}</div>
+          <div class="dl-sub">${d.subtitle}</div>
+          ${d.deviationNote ? `<div class="dev-pill">${d.deviationNote}</div>` : ''}
+        </div>
+      </div>`).join('');
+
+    // Update detail left panel
+    window.tripPlan = plan;
+    document.querySelector('.detail-left').innerHTML = `<div class="dl-title">Day by day</div>` +
+      plan.days.map((d, i) => `
+        <div class="dl-row" onclick="showDetailFromPlan(${i})">
+          <div class="dl-d ${d.intensity}">D${d.dayNum}</div>
+          <div class="dl-rb">
+            <div class="dl-rn">Day ${d.dayNum} · ${d.date}</div>
+            <div class="dl-rl">${d.location}</div>
+            <div class="dl-rs">${d.subtitle}</div>
+          </div>
+        </div>`).join('');
+
+  } catch(e) {
+    console.error('Render error:', e);
+    alert('Error rendering plan: ' + e.message);
+  }
+}
+
+// RENDER DAY DETAIL FROM PLAN
+function showDetailFromPlan(idx) {
+  showScreen('detail');
+  if (!window.tripPlan) return;
+  const d = window.tripPlan.days[idx];
+
+  // Update breadcrumb
+  document.getElementById('det-breadcrumb').textContent = `Day ${d.dayNum} · ${d.location.split('·')[1]?.trim() || d.location}`;
+
+  // Update header
+  document.querySelector('.det-day-label').textContent = `Day ${d.dayNum} · ${d.date}`;
+  document.querySelector('.det-loc').textContent = d.location;
+  document.querySelector('.det-badge').textContent = d.intensity.charAt(0).toUpperCase() + d.intensity.slice(1);
+  document.querySelector('.det-badge').className = `det-badge ${d.intensity}`;
+  document.querySelector('.det-stats').textContent = `${d.activities.filter(a=>a.type!=='transfer').length} stops · ~€${d.dayCost} / person`;
+  document.querySelector('.det-cost-val').textContent = `~€${d.dayCost} / person`;
+
+  // Active state in left panel
+  document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === idx));
+
+  // Actions banner
+  const banner = document.getElementById('actions-banner');
+  const actions = d.actions || [];
+  if (actions.length > 0) {
+    banner.style.display = 'block';
+    banner.className = 'actions-banner';
+    document.getElementById('ab-title').textContent = 'Actions required for today';
+    document.getElementById('ab-dot').style.background = 'var(--red-dark)';
+    banner.innerHTML = `
+      <div class="ab-title"><div class="ab-dot"></div><span>Actions required for today</span></div>
+      ${actions.map((a,i) => `
+        <div class="action-item">
+          <div class="acheck" id="dac${i}" onclick="tickDayAction(${i})">
+            <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg>
+          </div>
+          <div>
+            <div class="aname" id="dan${i}">${a.name}</div>
+            <div class="adesc" id="dad${i}">${a.description}</div>
+          </div>
+        </div>`).join('')}`;
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Build timeline
+  const periods = ['Morning','Lunch','Afternoon','Dinner','Evening'];
+  const periodMap = { '06':'Morning','07':'Morning','08':'Morning','09':'Morning','10':'Morning','11':'Morning',
+    '12':'Lunch','13':'Lunch','14':'Afternoon','15':'Afternoon','16':'Afternoon','17':'Afternoon',
+    '18':'Dinner','19':'Dinner','20':'Evening','21':'Evening','22':'Evening' };
+
+  // Group activities by period
+  const grouped = {};
+  periods.forEach(p => grouped[p] = []);
+  d.activities.forEach(a => {
+    if (a.type === 'transfer') return;
+    const hour = a.time ? a.time.split(':')[0] : '10';
+    const period = periodMap[hour] || 'Morning';
+    grouped[period].push(a);
+  });
+
+  // Build detail right content
+  const right = document.querySelector('.detail-right');
+  const headerHTML = right.querySelector('.det-header').outerHTML;
+  const editBarHTML = `<div class="edit-bar"><button class="edit-btn" id="edit-btn" onclick="toggleEdit()"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg> Edit this day</button></div><div class="edit-hint" id="edit-hint">Click any activity name or description to edit it directly.</div>`;
+
+  let timelineHTML = '';
+  periods.forEach(period => {
+    const acts = grouped[period];
+    if (!acts.length) return;
+    timelineHTML += `<div class="period"><div class="period-lbl">${period} <div class="period-line"></div></div><div class="timeline"><div class="tl-line"></div>`;
+    acts.forEach((a, ai) => {
+      const isFood = period === 'Lunch' || period === 'Dinner';
+      const dotClass = isFood ? 'food' : (a.pills?.includes('book_ahead') ? '' : 'soft');
+      const pillsHTML = (a.pills || []).map(p => {
+        if (p.startsWith('top10_')) return `<span class="pill top10">Top 10 #${p.replace('top10_','')}</span>`;
+        if (p === 'book_ahead') return `<span class="pill book">Book ahead</span>`;
+        return `<span class="pill passion">${p}</span>`;
+      }).join('');
+      timelineHTML += `
+        <div class="tl-item">
+          <div class="tl-left"><div class="tl-time">${a.time || ''}</div><div class="tl-dot ${dotClass}"></div></div>
+          ${isFood ? `<div class="food-lbl"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--green-mid)"><path d="M5 2v5a3 3 0 006 0V2M8 10v4M3 2v4"/></svg>Recommended ${period.toLowerCase()}</div>` : ''}
+          <div class="act-name-row"><span class="act-name editable">${a.name}</span>${pillsHTML}</div>
+          <div class="act-desc editable">${a.description}</div>
+          <div class="act-detail-row">
+            ${a.duration ? `<span class="act-dur">${a.duration}</span>` : ''}
+            ${a.cost ? `<span class="act-cost">${a.cost}</span>` : ''}
+          </div>
+        </div>`;
+      if (a.transferAfter) {
+        const icons = { walk: `<circle cx="6" cy="8" r="1.5"/><path d="M4 4h4v3a2 2 0 01-4 0V4z"/><path d="M6 2v2"/>`,
+          metro: `<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/><circle cx="3" cy="6" r="0.6" fill="currentColor"/><circle cx="9" cy="6" r="0.6" fill="currentColor"/>`,
+          train: `<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/>`,
+          taxi: `<rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/>` };
+        timelineHTML += `<div class="tl-transfer"><div class="trf-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">${icons[a.transferAfter.mode] || icons.walk}</svg></div><div class="trf-txt">${a.transferAfter.minutes} min${a.transferAfter.note ? ' · ' + a.transferAfter.note : ''}</div></div>`;
+      }
+    });
+    timelineHTML += `</div></div>`;
+  });
+
+  // Stops block
+  const allStops = d.activities.filter(a => a.type !== 'transfer');
+  const stopColors = ['s1','s2','s2','s3','s3','s4','s4','s4'];
+  const stopsHTML = `<div class="stops-block"><div class="stops-title">Today's stops</div>${allStops.map((a,i) =>
+    `<div class="stop-row"><div class="snum ${stopColors[i]||'s4'}">${i+1}</div>${a.name}</div>`).join('')}
+    <div class="map-note">Interactive map coming in the next version — stops will be plotted on Google Maps.</div></div>`;
+
+  right.innerHTML = headerHTML +
+    (actions.length ? banner.outerHTML : '') +
+    editBarHTML + timelineHTML + stopsHTML +
+    `<div class="det-footer"><button class="out-btn" onclick="showOutput()">← Back to plan</button></div>`;
+
+  // Re-render header values
+  document.querySelector('.det-day-label').textContent = `Day ${d.dayNum} · ${d.date}`;
+  document.querySelector('.det-loc').textContent = d.location;
+  document.querySelector('.det-badge').textContent = d.intensity.charAt(0).toUpperCase() + d.intensity.slice(1);
+  document.querySelector('.det-badge').className = `det-badge ${d.intensity}`;
+  document.querySelector('.det-stats').textContent = `${allStops.length} stops · ~€${d.dayCost} / person`;
+  document.querySelector('.det-cost-val').textContent = `~€${d.dayCost} / person`;
+
+  editOn = false;
+}
+
+function tickDayAction(i) {
+  const c = document.getElementById('dac'+i);
+  const n = document.getElementById('dan'+i);
+  const d2 = document.getElementById('dad'+i);
+  const done = c.classList.toggle('done');
+  n.classList.toggle('done', done);
+  d2.classList.toggle('done', done);
+  const banner = document.querySelector('.actions-banner');
+  const all = Array.from(document.querySelectorAll('.acheck')).every(x => x.classList.contains('done'));
+  banner.classList.toggle('all-done', all);
+  const dot = banner.querySelector('.ab-dot');
+  const title = banner.querySelector('.ab-title span');
+  if (dot) dot.style.background = all ? 'var(--green-dark)' : 'var(--red-dark)';
+  if (title) title.textContent = all ? 'All actions completed' : 'Actions required for today';
+}
+
+// AI CALL
+async function generatePlan(formData) {
+  const prompt = buildPrompt(formData);
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error('API error ' + response.status + ': ' + errText);
+    }
+
+    const data = await response.json();
+    const text = data.text || '';
+    if (!text) throw new Error('Empty response from API');
+
+    const clean = text.replace(/```json\n?|```\n?/g, '').trim();
+    const plan = JSON.parse(clean);
+    clearTimeout(window._loadingTimer);
+    window.tripPlan = plan;
+    renderOutput(plan);
+    showScreen('output');
+  } catch(e) {
+    console.error('AI error:', e);
+    const lpText = document.getElementById('lp-text');
+    if (lpText) lpText.textContent = 'Error: ' + e.message;
+    setTimeout(() => showScreen('output'), 2000);
+  }
+}
+function showDetail(dayIdx) {
+  if (window.tripPlan) { showDetailFromPlan(dayIdx); return; }
+  showScreen('detail');
+  document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === dayIdx));
+}
+
+// LOADING STEPS
+const stepLabels = ['Reading preferences...','Analyzing passions...','Exploring destination...','Building your rhythm...','Finding hidden gems...','Calculating routes...','Estimating budget...','Almost there...'];
+const stepDurations = [2500,3000,3500,3500,3000,3000,2500,3000];
+function runLoadingSteps() {
+  document.querySelectorAll('.lstep').forEach(s => s.classList.remove('active','done'));
+  let i = 0;
+  function next() {
+    if (i >= 8) {
+      // loop back keeping last step active until AI responds
+      document.querySelectorAll('.lstep').forEach(s => s.classList.remove('active','done'));
+      i = 0;
+    }
+    if (i > 0) {
+      document.getElementById('ls'+(i-1)).classList.remove('active');
+      document.getElementById('ls'+(i-1)).classList.add('done');
+    }
+    document.getElementById('ls'+i).classList.add('active');
+    const pct = Math.round(((i+1)/8)*100);
+    document.getElementById('lp-fill').style.width = pct+'%';
+    document.getElementById('lp-pct').textContent = pct+'%';
+    document.getElementById('lp-text').textContent = stepLabels[i];
+    i++;
+    window._loadingTimer = setTimeout(next, stepDurations[i-1]);
+  }
+  next();
+}
+
+// FORM PROGRESS
+function updateProgress() { /* progress tracked via wizard steps */ }
+
+// LEGEND ONCLICK — bound after DOM ready
+
+// TRAVEL PACE
+const PRESETS = {
+  full:['intense','intense','intense','intense','intense','intense','intense'],
+  dynamic:['intense','intense','medium','intense','intense','medium','intense'],
+  balanced:['intense','medium','rest','intense','medium','rest','intense'],
+  relaxed:['medium','rest','medium','medium','rest','medium','rest'],
+  zen:['rest','rest','medium','rest','rest','medium','rest']
+};
+const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let numDays = 7, days = [...PRESETS.balanced], selMode = 'intense';
+
+function getTripDates() {
+  const depInput = document.querySelector('[data-sec="1"] input[type=date]');
+  const depVal = depInput?.value;
+  if (!depVal) return null;
+  const start = new Date(depVal);
+  if (isNaN(start.getTime())) return null;
+  return start;
+}
+
+function getDayLabel(startDate, i) {
+  if (!startDate) return 'D' + (i+1);
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + i);
+  return d.getDate() + ' ' + MONTH_NAMES[d.getMonth()];
+}
+
+function getDayName(startDate, i) {
+  if (!startDate) return DAY_NAMES[i % 7];
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + i);
+  return DAY_NAMES[d.getDay()];
+}
+
+function syncDatesWithPace() {
+  const inputs = document.querySelectorAll('[data-sec="1"] input[type=date]');
+  const depVal = inputs[0]?.value;
+  const retVal = inputs[1]?.value;
+  if (depVal && retVal) {
+    const dep = new Date(depVal);
+    const ret = new Date(retVal);
+    const diff = Math.round((ret - dep) / (1000*60*60*24));
+    if (diff > 0 && diff <= 21) {
+      const n = diff + 1;
+      if (n !== numDays) {
+        if (n > numDays) for (let i = numDays; i < n; i++) days.push('medium');
+        else days = days.slice(0, n);
+        numDays = n;
+        document.getElementById('len-label').textContent = numDays + ' days';
+        document.querySelectorAll('.preset').forEach(p => p.classList.remove('on'));
+      }
+    }
+  }
+  renderDays();
+}
+
+function renderDays() {
+  const g = document.getElementById('days-grid');
+  if (!g) return;
+  g.innerHTML = '';
+  const startDate = getTripDates();
+  days.forEach((t, i) => {
+    const c = document.createElement('div');
+    c.className = 'day-cell';
+    const label = getDayLabel(startDate, i);
+    const dayName = getDayName(startDate, i);
+    const dot = document.createElement('div');
+    dot.className = 'dcell ' + t;
+    dot.style.cssText = 'font-size:9px;padding:2px';
+    dot.textContent = label;
+    dot.onclick = (function(idx){ return function(){ clickDay(idx); }; })(i);
+    const lbl = document.createElement('div');
+    lbl.className = 'dlabel';
+    lbl.textContent = dayName;
+    c.appendChild(dot);
+    c.appendChild(lbl);
+    g.appendChild(c);
+  });
+  const ct = {intense:0, medium:0, rest:0};
+  days.forEach(d => ct[d]++);
+  const summary = document.getElementById('pace-summary');
+  if (summary) summary.innerHTML = '<b>' + numDays + ' days</b> — ' + ct.intense + ' intense · ' + ct.medium + ' medium · ' + ct.rest + ' rest <span style="color:var(--text-ter)">TripMind may adjust order to match best experiences.</span>';
+}
+function clickDay(i) { days[i] = selMode; document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on')); renderDays(); }
+function applyPreset(k, btn) { days = Array.from({length:numDays},(_,i)=>PRESETS[k][i%PRESETS[k].length]); document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on')); btn.classList.add('on'); renderDays(); }
+function changeLen(d) { const n=Math.min(21,Math.max(3,numDays+d)); if(n===numDays)return; if(n>numDays) for(let i=numDays;i<n;i++) days.push('medium'); else days=days.slice(0,n); numDays=n; document.getElementById('len-label').textContent=numDays+' days'; document.querySelectorAll('.preset').forEach(p=>p.classList.remove('on')); renderDays(); }
+function selMode2(m) { selMode=m; ['intense','medium','rest'].forEach(x=>document.getElementById('leg-'+x).classList.toggle('sel',x===m)); }
+
+// TAGS
+function toggleTag(el, group) { el.classList.toggle('on'); }
+function addTag() {
+  const inp = document.getElementById('custom-tag-input');
+  const v = inp.value.trim(); if (!v) return;
+  const t = document.createElement('div'); t.className = 'tag on'; t.textContent = v;
+  t.onclick = function() { this.classList.toggle('on'); };
+  document.getElementById('passion-tags').appendChild(t); inp.value = '';
+}
+
+// FLIGHT TOGGLES
+function toggleFlight(id) {
+  const d = document.getElementById('fd-' + id);
+  const a = document.getElementById('fa-' + id);
+  const open = d.classList.toggle('open');
+  a.classList.toggle('open', open);
+  if (open) a.closest('.flight-toggle').style.color = 'var(--green)';
+  else a.closest('.flight-toggle').style.color = '';
+}
+
+// BUDGET TOTAL CALC
+function updateBudget() {
+  const pp = parseInt(document.getElementById('budget-input').value);
+  const label = document.getElementById('budget-total');
+  const travellers = parseInt(document.querySelector('[data-sec="1"] input[type=number]')?.value) || 1;
+  if (pp && pp > 0) {
+    const total = pp * travellers;
+    label.textContent = '= €' + total.toLocaleString() + ' total for ' + travellers + ' traveller' + (travellers > 1 ? 's' : '');
+    label.style.color = 'var(--green-dark)';
+  } else {
+    label.textContent = '';
+  }
+}
+
+// TOGGLE FLIGHTS
+function toggleFlights() {
+  const on = document.querySelector('.tog input').checked;
+  document.getElementById('flights-confirm').classList.toggle('show', on);
+}
+
+// ACTIONS TICK
+function tickAction(id) {
+  const c = document.getElementById('ac'+id);
+  const n = document.getElementById('an'+id);
+  const d = document.getElementById('ad'+id);
+  const done = c.classList.toggle('done');
+  n.classList.toggle('done', done);
+  d.classList.toggle('done', done);
+  const all = Array.from(document.querySelectorAll('.acheck')).every(x => x.classList.contains('done'));
+  const banner = document.getElementById('actions-banner');
+  banner.classList.toggle('all-done', all);
+  document.getElementById('ab-dot').style.background = all ? 'var(--green-dark)' : 'var(--red-dark)';
+  document.getElementById('ab-title').textContent = all ? 'All actions completed' : 'Actions required for today';
+}
+
+// EDIT MODE
+let editOn = false;
+function toggleEdit() {
+  editOn = !editOn;
+  const btn = document.getElementById('edit-btn');
+  const hint = document.getElementById('edit-hint');
+  btn.classList.toggle('on', editOn);
+  btn.innerHTML = editOn
+    ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13h10M9 3l4 4-7 7H2v-4l7-7z"/></svg> Done editing'
+    : '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg> Edit this day';
+  hint.classList.toggle('show', editOn);
+  document.querySelectorAll('.editable').forEach(el => el.contentEditable = editOn ? 'true' : 'false');
+}
+
+// INIT — runs after full DOM is parsed
+showScreen('form');
+goToStep(1);
+renderDays();
+document.getElementById('leg-intense').onclick = () => selMode2('intense');
+document.getElementById('leg-medium').onclick = () => selMode2('medium');
+document.getElementById('leg-rest').onclick = () => selMode2('rest');
+</script>
+</body>
+</html>
