@@ -357,6 +357,12 @@
   .ddp-stats { font-size: 12px; color: var(--text-sec); }
   .ddp-cost { font-size: 13px; font-weight: 600; color: var(--text); margin-left: auto; }
 
+  .local-event-banner { display: flex; gap: 10px; align-items: flex-start; background: #FFF8E7; border: 0.5px solid #F0C040; border-radius: var(--radius); padding: 10px 12px; margin-top: 10px; }
+  .le-icon { font-size: 18px; flex-shrink: 0; }
+  .le-name { font-size: 13px; font-weight: 700; color: #7A5000; margin-bottom: 2px; }
+  .le-desc { font-size: 12px; color: #7A5000; line-height: 1.4; }
+  .le-impact { font-size: 11px; color: #9B6000; margin-top: 4px; font-weight: 600; }
+
   /* DETAIL LAYOUT */
   .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
   .detail-left { border-right: 0.5px solid var(--border); padding: 1rem; background: var(--bg-sec); overflow-y: auto; }
@@ -1143,6 +1149,7 @@ function selectDay(idx) {
         (d.dayCost ? '<span class="ddp-cost">~€' + d.dayCost + ' / person</span>' : '') +
       '</div>' +
       (d.deviationNote ? '<div class="dev-pill" style="margin-top:8px">' + d.deviationNote + '</div>' : '') +
+      (d.localEvent ? '<div class="local-event-banner"><div class="le-icon">🎉</div><div class="le-body"><div class="le-name">' + d.localEvent.name + '</div><div class="le-desc">' + d.localEvent.description + '</div>' + (d.localEvent.impact ? '<div class="le-impact">⚠ ' + d.localEvent.impact + '</div>' : '') + '</div></div>' : '') +
     '</div>' +
     actionsHTML +
     timelineHTML +
@@ -1291,6 +1298,7 @@ function buildPrompt(d) {
     '    "dayNum": 1, "date": "Mon 12 May", "intensity": "medium",\n' +
     '    "location": "City · Neighbourhood", "subtitle": "max 6 words",\n' +
     '    "deviationNote": "str or null", "dayCost": 120,\n' +
+    '    "localEvent": {"name": "Festival name", "description": "What it is", "impact": "Practical impact"} or null,\n' +
     '    "actions": [{"name": "Venue", "description": "What to book and when"}],\n' +
     '    "activities": [{\n' +
     '      "time": "09:00", "type": "activity", "name": "Place name",\n' +
@@ -1312,7 +1320,9 @@ function buildPrompt(d) {
     '4. Be specific: real place names, real restaurants, real experiences\n' +
     '5. Keep descriptions to 1 sentence max per activity\n' +
     '6. Max 4 activities per day (not counting transfers)\n' +
-    '7. EVERY day must include an evening activity — dinner, bar, live music, a walk, or relaxing in the hotel. Never leave the evening empty.\n\n' +
+    '7. EVERY day must include an evening activity — dinner, bar, live music, a walk, or relaxing in the hotel. Never leave the evening empty.\n' +
+    '8. LOCAL EVENTS: Always check if the travel dates coincide with local festivals, public holidays, seasonal events, or cultural celebrations at the destination. If yes, integrate them into the plan and flag them clearly with a note explaining what the event is and any practical impact (closures, crowds, special access). Add a "localEvent" field to the relevant day with: {"name": "...", "description": "...", "impact": "..."}.\n' +
+    '9. RECOMMENDATIONS: Always give one specific first recommendation for accommodation and one for each meal. Use your knowledge of well-regarded local places — reference real hotel names, real restaurant names with the neighbourhood. Be opinionated: say WHY this place fits this traveller specifically. Never say "there are many options" — always commit to one clear first pick.\n\n' +
     'RESPOND WITH THIS JSON STRUCTURE (follow exactly):\n' +
     jsonStructure;
 }
