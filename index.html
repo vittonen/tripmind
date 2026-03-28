@@ -40,6 +40,8 @@
   .screen { display: none; max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
   .screen.active { display: block; }
   .screen.wide { max-width: 1100px; }
+  #screen-output.active { display: grid; }
+  #screen-output:not(.active) { display: none !important; }
 
   /* DESKTOP: full-width two-column layout */
   @media (min-width: 1024px) {
@@ -302,7 +304,53 @@
   .out-btn { font-family: var(--font-ui); font-size: 13px; padding: 7px 16px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-sec); cursor: pointer; transition: all 0.15s; }
   .out-btn:hover { border-color: var(--green); color: var(--green); }
 
-  /* DAY DETAIL */
+  /* SUBSECTIONS */
+  .subsection-label { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px; margin-top: 4px; }
+  .passions-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
+  .passions-explainer { display: flex; gap: 10px; align-items: flex-start; background: var(--green-pale); border: 0.5px solid var(--green-light); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 12px; font-size: 13px; color: var(--green-dark); line-height: 1.5; }
+  .pe-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .passions-explainer b { color: var(--green-dark); }
+
+  /* SOFTER TODO - R3-5 */
+  .actions-banner { background: var(--bg-sec); border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1rem; }
+  .actions-banner.all-done { background: var(--green-pale); border-color: var(--green-light); }
+  .ab-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .actions-banner.all-done .ab-title { color: var(--green-dark); }
+  .ab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); }
+  .actions-banner.all-done .ab-dot { background: var(--green-dark); }
+  .acheck { width: 18px; height: 18px; border-radius: 4px; border: 1.5px solid var(--border-med); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .acheck.done { background: var(--green-dark); border-color: var(--green-dark); }
+  .acheck svg { width: 10px; height: 10px; color: white; opacity: 0; transition: opacity 0.15s; }
+  .acheck.done svg { opacity: 1; }
+  .aname { font-size: 12px; font-weight: 600; color: var(--text); transition: all 0.15s; }
+  .aname.done { color: var(--text-sec); text-decoration: line-through; opacity: 0.7; }
+  .adesc { font-size: 11px; color: var(--text-sec); }
+  .adesc.done { opacity: 0.7; }
+
+  /* TODO PANEL in output - R3-5 */
+  .todo-panel-wrap { margin: 1rem 0; }
+  .todo-panel-toggle { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--bg-sec); border: 0.5px solid var(--border-med); border-radius: var(--radius); cursor: pointer; font-size: 13px; font-weight: 600; color: var(--text); transition: all 0.15s; }
+  .todo-panel-toggle:hover { border-color: var(--green); color: var(--green); }
+  .todo-panel-toggle .tp-arrow { font-size: 10px; transition: transform 0.2s; margin-left: auto; }
+  .todo-panel-toggle.open .tp-arrow { transform: rotate(90deg); }
+  .todo-panel-body { display: none; border: 0.5px solid var(--border); border-top: none; border-radius: 0 0 var(--radius) var(--radius); padding: 12px 14px; background: var(--bg); }
+  .todo-panel-body.open { display: block; }
+  .todo-day-group { margin-bottom: 12px; }
+  .todo-day-group:last-child { margin-bottom: 0; }
+  .todo-day-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .todo-item { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; color: var(--text-sec); }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-item b { color: var(--text); }
+
+  /* MOBILE DAY DETAIL - R3-4 */
+  @media (max-width: 768px) {
+    .detail-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .detail-left { border-right: none; border-bottom: 0.5px solid var(--border); padding: 0.75rem; max-height: 160px; overflow-y: auto; display: flex; flex-wrap: nowrap; gap: 6px; overflow-x: auto; }
+    .detail-left .dl-title { display: none; }
+    .dl-row { flex-direction: row; min-width: 140px; flex-shrink: 0; border: 0.5px solid var(--border); border-radius: var(--radius); margin-bottom: 0; }
+    .dl-row.active { border-color: var(--green); background: var(--green-pale); }
+    .detail-right { padding: 1rem; }
+  }
   .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
   .detail-left { border-right: 0.5px solid var(--border); padding: 1rem; background: var(--bg-sec); overflow-y: auto; }
   .dl-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
@@ -488,9 +536,8 @@
       <div class="welcome-note"><b>Tell us how you like to travel.</b> The more detail you share, the better your plan.</div>
 
       <div class="form-section" data-sec="2">
-        <div class="section-label">Style — accommodation</div>
-        <div class="field"><label>Describe your ideal place to stay</label><textarea placeholder="e.g. Small boutique hotels with local character, away from tourist areas..." oninput="updateProgress()"></textarea></div>
-        <div class="tags" id="accom-tags">
+        <div class="section-label">Accommodation style</div>
+        <div class="tags" id="accom-tags" style="margin-bottom:10px">
           <div class="tag" onclick="toggleTag(this,'accom')">Boutique hotel</div>
           <div class="tag" onclick="toggleTag(this,'accom')">Luxury resort</div>
           <div class="tag" onclick="toggleTag(this,'accom')">Local apartment</div>
@@ -498,13 +545,14 @@
           <div class="tag" onclick="toggleTag(this,'accom')">Glamping</div>
           <div class="tag" onclick="toggleTag(this,'accom')">Hostel / social</div>
         </div>
+        <div class="field"><textarea placeholder="Anything specific? e.g. away from tourist areas, need a pool, love rooftop bars..." oninput="updateProgress()" style="min-height:48px"></textarea></div>
       </div>
 
       <div class="form-section" data-sec="3">
         <div class="section-label">Travel pace</div>
         <div class="pace-block">
-          <div class="pace-onboarding"><b>How this works:</b> pick a preset for your overall travel style, then fine-tune individual days by selecting a pace and clicking the circles.</div>
-          <div class="pace-notice">This is your <b>ideal rhythm</b>, not a fixed schedule — TripMind flags any deviations in the plan.</div>
+          <div class="pace-onboarding"><b>How this works:</b> pick a preset below, then fine-tune individual days by selecting Intense / Medium / Rest and clicking the circles.</div>
+          <div class="pace-notice">This is your <b>ideal rhythm</b> — TripMind flags any necessary deviations in your plan.</div>
           <div class="trip-length">
             <span>Trip length:</span>
             <button onclick="changeLen(-1)">−</button>
@@ -519,12 +567,11 @@
             <div class="preset" onclick="applyPreset('relaxed',this)">Relaxed</div>
             <div class="preset" onclick="applyPreset('zen',this)">Pure zen</div>
           </div>
-          <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">Fine-tune day by day</div>
+          <div style="font-size:12px;color:var(--text-sec);margin-bottom:8px;">Fine-tune day by day — select a mode then click the circles</div>
           <div class="pace-legend">
             <div class="legend-item sel" id="leg-intense"><div class="ldot intense"></div><span>Intense</span></div>
             <div class="legend-item" id="leg-medium"><div class="ldot medium"></div><span>Medium</span></div>
             <div class="legend-item" id="leg-rest"><div class="ldot rest"></div><span>Rest</span></div>
-            <span style="font-size:11px;color:var(--text-sec)">← select then click days</span>
           </div>
           <div class="days-grid" id="days-grid"></div>
           <div class="pace-summary" id="pace-summary"></div>
@@ -533,6 +580,8 @@
 
       <div class="form-section" data-sec="4-exp">
         <div class="section-label">Style & passions</div>
+
+        <div class="subsection-label">Experience style</div>
         <div class="tags" style="margin-bottom:10px">
           <div class="tag" onclick="this.classList.toggle('on')">Off-the-beaten-path</div>
           <div class="tag" onclick="this.classList.toggle('on')">Cultural immersion</div>
@@ -542,6 +591,17 @@
           <div class="tag" onclick="this.classList.toggle('on')">Adventure sports</div>
           <div class="tag" onclick="this.classList.toggle('on')">Wellness & spa</div>
           <div class="tag" onclick="this.classList.toggle('on')">Art & museums</div>
+        </div>
+        <div class="field" style="margin-bottom:1.5rem"><textarea placeholder="Describe your travel style... e.g. I want to feel local, hate tourist traps, need one unexpected adventure each day" oninput="updateProgress()" style="min-height:48px"></textarea></div>
+
+        <div class="passions-divider"></div>
+
+        <div class="subsection-label">Your passions</div>
+        <div class="passions-explainer">
+          <div class="pe-icon">✦</div>
+          <div><b>This is where TripMind makes the real difference.</b> The more specific you are about what you love, the more your plan will feel like it was built for you — and nobody else.</div>
+        </div>
+        <div class="tags" id="passion-tags" style="margin-bottom:10px">
           <div class="tag" onclick="this.classList.toggle('on')">Sauna & ice bath</div>
           <div class="tag" onclick="this.classList.toggle('on')">Surf</div>
           <div class="tag" onclick="this.classList.toggle('on')">Photography</div>
@@ -555,8 +615,8 @@
           <div class="tag" onclick="this.classList.toggle('on')">Craft beer</div>
           <div class="tag" onclick="this.classList.toggle('on')">Vintage & markets</div>
         </div>
-        <div class="tag-add" style="margin-bottom:10px"><input type="text" id="custom-tag-input" placeholder="Add your own interest..."><button onclick="addTag()">+ Add</button></div>
-        <div class="field"><label>Tell us more — the more specific, the better your plan</label><textarea placeholder="e.g. I love sauna culture and ice baths, always seek hidden local spots, hate tourist traps..." oninput="updateProgress()"></textarea></div>
+        <div class="tag-add" style="margin-bottom:10px"><input type="text" id="custom-tag-input" placeholder="Add your own passion..."><button onclick="addTag()">+ Add</button></div>
+        <div class="field"><textarea placeholder="Tell us more — the more specific, the better. e.g. I'm obsessed with sauna culture and ice baths, finding a great onsen is non-negotiable..." oninput="updateProgress()" style="min-height:48px"></textarea></div>
       </div>
 
       <div class="form-section" data-sec="4b">
@@ -815,6 +875,17 @@
 
     </div><!-- end output-right-col -->
 
+    <div class="todo-panel-wrap">
+      <div class="todo-panel-toggle" onclick="toggleTodoPanel(this)">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4h10M3 8h7M3 12h5"/></svg>
+        Full to-do list — actions required across all days
+        <span class="tp-arrow">▶</span>
+      </div>
+      <div class="todo-panel-body" id="todo-panel-body">
+        <div style="font-size:12px;color:var(--text-sec);padding:8px 0">Generate your plan to see the full to-do list.</div>
+      </div>
+    </div>
+
     <div class="out-footer">
       <button class="out-btn" onclick="goHome()">← Edit preferences</button>
     </div>
@@ -1000,6 +1071,11 @@ function goToStep(n) {
   if (n === 2) { syncDatesWithPace(); renderDays(); }
   window.scrollTo(0, 0);
 }
+function toggleTodoPanel(btn) {
+  btn.classList.toggle('open');
+  document.getElementById('todo-panel-body').classList.toggle('open');
+}
+
 function showOutput() { showScreen('output'); }
 function showLoading() {
   const formData = collectFormData();
@@ -1221,6 +1297,24 @@ function renderOutput(plan) {
         <div class="passion-status ok">✓</div>
       </div>`
     ).join('') + (pass.allIntegrated ? '' : `<div style="font-size:12px;color:var(--text-sec);padding:4px 0">Some interests could not be integrated in this itinerary.</div>`);
+
+    // Todo panel — all actions grouped by day
+    const todoPanel = document.getElementById('todo-panel-body');
+    if (todoPanel) {
+      const allActions = plan.days.filter(d => d.actions && d.actions.length > 0);
+      if (allActions.length === 0) {
+        todoPanel.innerHTML = '<div style="font-size:12px;color:var(--text-sec);padding:8px 0">No advance bookings required for this trip.</div>';
+      } else {
+        todoPanel.innerHTML = allActions.map(d =>
+          '<div class="todo-day-group">' +
+          '<div class="todo-day-title">Day ' + d.dayNum + ' · ' + d.date + ' — ' + d.location + '</div>' +
+          d.actions.map(a =>
+            '<div class="todo-item"><b>' + a.name + '</b>&nbsp;— ' + a.description + '</div>'
+          ).join('') +
+          '</div>'
+        ).join('');
+      }
+    }
 
     // Day by day list
     document.querySelector('.days-section').innerHTML = plan.days.map((d, i) => `
