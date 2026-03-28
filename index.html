@@ -288,7 +288,7 @@
   /* HOMEPAGE STEP 1 */
   #wpage-1 { padding: 0; margin: -2rem -1.5rem; }
   body.on-homepage #screen-form { max-width: 100%; padding: 0; }
-  .hp-hero { background: linear-gradient(160deg, #0a3d2e 0%, #0F6E56 50%, #1D9E75 100%); min-height: calc(100vh - 52px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem 3rem; text-align: center; position: relative; overflow: hidden; }
+  .hp-hero { background: linear-gradient(160deg, #0a3d2e 0%, #0F6E56 50%, #1D9E75 100%); min-height: calc(100vh - 52px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem 3rem; text-align: center; position: relative; overflow: visible; }
   .hp-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events: none; }
   .hp-eyebrow { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; position: relative; z-index: 1; }
   .hp-title { font-size: clamp(32px, 6vw, 56px); font-weight: 700; color: white; font-family: var(--font); line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px; position: relative; z-index: 1; }
@@ -591,7 +591,7 @@
           <div class="form-section" data-sec="1" style="margin:0">
             <div class="hp-inline-fields">
               <div class="hp-inline-field" style="flex:2">
-                <div class="date-range-picker hp-dark" id="date-range-picker" onclick="toggleDatePicker()">
+                <div class="date-range-picker hp-dark" id="date-range-picker" onclick="toggleDatePicker(event)">
                   <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
                   <span id="date-range-label">Add travel dates</span>
                   <span class="drp-clear" id="drp-clear" onclick="clearDates(event)" style="display:none">✕</span>
@@ -1853,7 +1853,8 @@ function toggleEdit() {
 let drpStartDate = null, drpEndDate = null, drpCurrentMonth = new Date();
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-function toggleDatePicker() {
+function toggleDatePicker(e) {
+  if (e) e.stopPropagation();
   const cal = document.getElementById('drp-calendar');
   const picker = document.getElementById('date-range-picker');
   if (!cal) return;
@@ -1907,8 +1908,10 @@ function renderCalendar() {
 }
 
 function selectDrpDay(dateStr) {
+  event && event.stopPropagation();
   if (!drpStartDate || (drpStartDate && drpEndDate) || dateStr < drpStartDate) {
     drpStartDate = dateStr; drpEndDate = null;
+    renderCalendar(); // stay open, wait for end date
   } else {
     drpEndDate = dateStr;
     const dep = new Date(drpStartDate), ret = new Date(drpEndDate);
@@ -1919,9 +1922,9 @@ function selectDrpDay(dateStr) {
     document.getElementById('drp-clear').style.display = 'inline';
     document.getElementById('drp-calendar').style.display = 'none';
     document.getElementById('date-range-picker').classList.remove('open');
+    renderCalendar();
     syncDatesWithPace();
   }
-  renderCalendar();
 }
 
 document.addEventListener('click', function(e) {
