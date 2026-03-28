@@ -189,10 +189,20 @@
   .bc-sep { color: var(--border-med); }
   .bc-active { color: var(--text); font-weight: 600; }
   .wow-block { background: var(--bg-sec); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.75rem; border: 0.5px solid var(--border); }
-  .wow-ready { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; }
   .wow-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
-  .wow-headline { font-size: 22px; font-weight: 600; color: var(--text); line-height: 1.35; margin-bottom: 0.75rem; font-family: var(--font); }
-  .wow-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-sec); }
+  .wow-destination { font-size: 36px; font-weight: 700; color: var(--text); font-family: var(--font); text-align: center; margin: 0.5rem 0 0.25rem; letter-spacing: -1px; }
+  .wow-headline { font-size: 16px; font-weight: 400; color: var(--text-sec); line-height: 1.5; margin-bottom: 0.75rem; font-family: var(--font); text-align: center; font-style: italic; }
+  .wow-meta { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-sec); justify-content: center; }
+  .wow-ready { font-size: 12px; font-weight: 600; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .passions-cards { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .passion-card { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--green-pale); border-radius: var(--radius); border: 0.5px solid var(--green-light); }
+  .passion-icon { font-size: 18px; flex-shrink: 0; }
+  .passion-info { flex: 1; }
+  .passion-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .passion-where { font-size: 11px; color: var(--green-dark); }
+  .passion-status { font-size: 13px; font-weight: 700; }
+  .passion-status.ok { color: var(--green-dark); }
+  .passion-status.miss { color: var(--text-sec); }
   .out-section-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
   .sb-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
   .sb-row:last-child { border-bottom: none; }
@@ -628,9 +638,10 @@
 
     <div class="wow-block">
       <div class="wow-ready"><div class="wow-dot"></div>Your plan is ready</div>
+      <div class="wow-destination" id="wow-destination">Japan</div>
       <div class="wow-headline">Seven days of contrasts — ancient temples, forest silence, and Tokyo's electric nights</div>
       <div class="wow-meta">
-        <span>Japan</span><span>·</span><span>12–19 May 2025</span><span>·</span><span>2 travellers</span><span>·</span><span>7 days</span>
+        <span>12–19 May 2025</span><span>·</span><span>2 travellers</span><span>·</span><span>7 days</span>
       </div>
     </div>
 
@@ -650,9 +661,14 @@
     <div class="sb-row" id="sb-cities">
       <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2C5.8 2 4 3.8 4 6c0 3 4 8 4 8s4-5 4-8c0-2.2-1.8-4-4-4z"/><circle cx="8" cy="6" r="1.5"/></svg></div>
       <div class="sb-body">
-        <div class="sb-label">Cities & overnight stays</div>
+        <div class="sb-label">Cities, stays & transport</div>
         <div class="sb-value">3 cities — Tokyo (3 nights), Hakone (1 night), Kyoto/Nara (2 nights)</div>
         <div class="sb-note">Average 2.3 nights per location — no daily moves required</div>
+        <div class="transport-row" id="transport-row" style="margin-top:8px">
+          <div class="tr-pill req"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/></svg>Rental car</div>
+          <span style="color:var(--text-sec)">→</span>
+          <div class="tr-pill rec"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="7" rx="1.5"/><path d="M4 12v1M12 12v1M1 9h14"/><circle cx="4" cy="8" r="0.8" fill="currentColor"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>Shinkansen — faster & cheaper</div>
+        </div>
         <div class="sb-good">Good rhythm — you unpack only 3 times in 7 days</div>
       </div>
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
@@ -683,21 +699,6 @@
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
     </div>
 
-    <div class="sb-row" id="sb-transport">
-      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M10 5l3 3-3 3"/></svg></div>
-      <div class="sb-body">
-        <div class="sb-label">Transport</div>
-        <div class="sb-value" style="margin-top:4px">~780 km total · 3 legs</div>
-        <div class="sb-note">Tokyo → Hakone · Hakone → Kyoto · Kyoto → Nara</div>
-        <div class="transport-row">
-          <div class="tr-pill req"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/></svg>Rental car</div>
-          <span style="color:var(--text-sec)">→</span>
-          <div class="tr-pill rec"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="7" rx="1.5"/><path d="M4 12v1M12 12v1M1 9h14"/><circle cx="4" cy="8" r="0.8" fill="currentColor"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>Shinkansen — faster & cheaper</div>
-        </div>
-      </div>
-      <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
-    </div>
-
     <div class="sb-row" id="sb-top10">
       <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8l3 3 7-7"/></svg></div>
       <div class="sb-body">
@@ -714,12 +715,35 @@
     </div>
 
     <div class="sb-row" id="sb-passions">
-      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="6" r="4"/><path d="M10 10l3 3"/></svg></div>
+      <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-6-4.5-6-8a6 6 0 0112 0c0 3.5-6 8-6 8z"/></svg></div>
       <div class="sb-body">
-        <div class="sb-label">Your passions — integration</div>
-        <div class="sb-value">Sauna & ice bath, jazz & live music, craft beer</div>
-        <div class="sb-note">Onsen at Hakone ryokan (day 3) · Jazz bar in Shimokitazawa (day 6) · Craft beer at Yona Yona (day 2)</div>
-        <div class="sb-good">All 3 personal interests integrated in the plan</div>
+        <div class="sb-label">Your passions — integrated in the plan</div>
+        <div class="passions-cards" id="passions-cards">
+          <div class="passion-card">
+            <div class="passion-icon">♨️</div>
+            <div class="passion-info">
+              <div class="passion-name">Sauna & ice bath</div>
+              <div class="passion-where">Hakone ryokan onsen · Day 3</div>
+            </div>
+            <div class="passion-status ok">✓</div>
+          </div>
+          <div class="passion-card">
+            <div class="passion-icon">🎷</div>
+            <div class="passion-info">
+              <div class="passion-name">Jazz & live music</div>
+              <div class="passion-where">Jazz bar Shimokitazawa · Day 6</div>
+            </div>
+            <div class="passion-status ok">✓</div>
+          </div>
+          <div class="passion-card">
+            <div class="passion-icon">🍺</div>
+            <div class="passion-info">
+              <div class="passion-name">Craft beer</div>
+              <div class="passion-where">Yona Yona Beer Works · Day 2</div>
+            </div>
+            <div class="passion-status ok">✓</div>
+          </div>
+        </div>
       </div>
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
     </div>
@@ -1073,8 +1097,10 @@ function renderOutput(plan) {
 
     // Wow block
     document.querySelector('.wow-headline').textContent = plan.headline;
+    const wowDest = document.getElementById('wow-destination');
+    if (wowDest) wowDest.textContent = plan.meta.destination;
     document.querySelector('.wow-meta').innerHTML =
-      `<span>${plan.meta.destination}</span><span>·</span><span>${plan.meta.dates}</span><span>·</span><span>${plan.meta.travellers} traveller${plan.meta.travellers > 1 ? 's' : ''}</span><span>·</span><span>${plan.meta.days} days</span>`;
+      `<span>${plan.meta.dates}</span><span>·</span><span>${plan.meta.travellers} traveller${plan.meta.travellers > 1 ? 's' : ''}</span><span>·</span><span>${plan.meta.days} days</span>`;
 
     // Cost
     const cost = plan.summary.cost;
@@ -1091,12 +1117,18 @@ function renderOutput(plan) {
       if (costGood) { costGood.textContent = 'Within your budget'; costGood.style.display = 'inline-block'; }
     }
 
-    // Cities
+    // Cities + Transport (merged)
     const cities = plan.summary.cities;
+    document.querySelector('#sb-cities .sb-label').textContent = 'Cities, stays & transport';
     document.querySelector('#sb-cities .sb-value').textContent = cities.value;
     document.querySelector('#sb-cities .sb-note').textContent = cities.note;
     const citiesStatus = document.querySelector('#sb-cities .sb-good') || document.querySelector('#sb-cities .sb-alert');
     if (citiesStatus) citiesStatus.textContent = cities.message;
+    const tr = plan.summary.transport;
+    const trRow = document.getElementById('transport-row');
+    if (trRow) trRow.innerHTML = `
+      <div class="tr-pill ${tr.requested === tr.recommended ? 'rec' : 'req'}">${tr.requested}</div>
+      ${tr.requested !== tr.recommended ? `<span style="color:var(--text-sec)">→</span><div class="tr-pill rec">${tr.recommended}${tr.alert ? ' — ' + tr.alert : ''}</div>` : ''}`;
 
     // Intensity dots
     document.querySelector('.dots-row').innerHTML = plan.summary.intensity.days.map(d =>
@@ -1108,14 +1140,6 @@ function renderOutput(plan) {
       paceAlert.style.display = plan.summary.intensity.deviationNote ? 'block' : 'none';
     }
 
-    // Transport
-    const tr = plan.summary.transport;
-    document.querySelector('#sb-transport .sb-value').textContent = `~${tr.totalKm} km total`;
-    document.querySelector('#sb-transport .sb-note').textContent = tr.legs;
-    document.querySelector('.transport-row').innerHTML = `
-      <div class="tr-pill ${tr.requested === tr.recommended ? 'rec' : 'req'}">${tr.requested}</div>
-      ${tr.requested !== tr.recommended ? `<span style="color:var(--text-sec)">→</span><div class="tr-pill rec">${tr.recommended}${tr.alert ? ' — ' + tr.alert : ''}</div>` : ''}`;
-
     // Top 10
     const t10 = plan.summary.top10;
     document.querySelector('#sb-top10 .sb-value').textContent = `${t10.covered} out of ${t10.total} included`;
@@ -1124,13 +1148,25 @@ function renderOutput(plan) {
       `<div class="t10 ${i.covered ? 'on' : 'off'}" title="${i.name}">${i.num}</div>`
     ).join('');
 
-    // Passions
+    // Passions — card layout
     const pass = plan.summary.passions;
-    document.querySelector('#sb-passions .sb-value').textContent = pass.identified.join(', ');
-    document.querySelector('#sb-passions .sb-note').textContent =
-      pass.integrations.map(p => `${p.passion} → ${p.where} (day ${p.day})`).join(' · ');
-    const passGood = document.querySelector('#sb-passions .sb-good');
-    if (passGood) passGood.textContent = pass.allIntegrated ? 'All personal interests integrated in the plan' : 'Some interests integrated — see day details';
+    const emojis = {'sauna':'♨️','surf':'🏄','photography':'📷','hiking':'🥾','yoga':'🧘','cycling':'🚴','jazz':'🎷','football':'⚽','scuba':'🤿','climbing':'🧗','beer':'🍺','vintage':'🛍️','music':'🎵','art':'🎨','food':'🍜','nature':'🌿','culture':'🏛️'};
+    function getEmoji(passion) {
+      const key = passion.toLowerCase();
+      for (const k in emojis) { if (key.includes(k)) return emojis[k]; }
+      return '✨';
+    }
+    const cardsEl = document.getElementById('passions-cards');
+    if (cardsEl) cardsEl.innerHTML = pass.integrations.map(p =>
+      `<div class="passion-card">
+        <div class="passion-icon">${getEmoji(p.passion)}</div>
+        <div class="passion-info">
+          <div class="passion-name">${p.passion}</div>
+          <div class="passion-where">${p.where} · Day ${p.day}</div>
+        </div>
+        <div class="passion-status ok">✓</div>
+      </div>`
+    ).join('') + (pass.allIntegrated ? '' : `<div style="font-size:12px;color:var(--text-sec);padding:4px 0">Some interests could not be integrated in this itinerary.</div>`);
 
     // Day by day list
     document.querySelector('.days-section').innerHTML = plan.days.map((d, i) => `
