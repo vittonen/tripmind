@@ -476,9 +476,8 @@
       </div>
 
       <div class="form-section" data-sec="4-exp">
-        <div class="section-label">Experience style</div>
-        <div class="field"><label>What kind of experiences matter most to you?</label><textarea placeholder="e.g. I want to feel like a local, avoid tourist traps, one unexpected adventure per day..." oninput="updateProgress()"></textarea></div>
-        <div class="tags" style="margin-top:10px">
+        <div class="section-label">Style & passions</div>
+        <div class="tags" style="margin-bottom:10px">
           <div class="tag" onclick="this.classList.toggle('on')">Off-the-beaten-path</div>
           <div class="tag" onclick="this.classList.toggle('on')">Cultural immersion</div>
           <div class="tag" onclick="this.classList.toggle('on')">Nature & outdoors</div>
@@ -487,27 +486,6 @@
           <div class="tag" onclick="this.classList.toggle('on')">Adventure sports</div>
           <div class="tag" onclick="this.classList.toggle('on')">Wellness & spa</div>
           <div class="tag" onclick="this.classList.toggle('on')">Art & museums</div>
-        </div>
-      </div>
-
-      <div class="form-section" data-sec="4b">
-        <div class="section-label">Style — food & drink</div>
-        <div class="field"><label>Describe your food philosophy when travelling</label><textarea placeholder="e.g. Food is central — I always research the best local spots and I'm open to trying anything once..." oninput="updateProgress()"></textarea></div>
-        <div class="tags">
-          <div class="tag" onclick="this.classList.toggle('on')">Street food</div>
-          <div class="tag" onclick="this.classList.toggle('on')">Fine dining</div>
-          <div class="tag" onclick="this.classList.toggle('on')">Local markets</div>
-          <div class="tag" onclick="this.classList.toggle('on')">Cooking classes</div>
-          <div class="tag" onclick="this.classList.toggle('on')">Wine & craft drinks</div>
-          <div class="tag" onclick="this.classList.toggle('on')">Michelin starred</div>
-        </div>
-        <div class="field" style="margin-top:12px;max-width:360px"><label>Dietary restrictions</label><input type="text" placeholder="e.g. vegetarian, halal, no shellfish"></div>
-      </div>
-
-      <div class="form-section" data-sec="5">
-        <div class="section-label">Passions & personal interests</div>
-        <div class="field"><label>Tell us about your passions — the more specific, the better</label><textarea placeholder="e.g. I'm obsessed with sauna culture and ice baths — finding a great sauna is a must for any trip..." oninput="updateProgress()"></textarea></div>
-        <div class="tags" id="passion-tags">
           <div class="tag" onclick="this.classList.toggle('on')">Sauna & ice bath</div>
           <div class="tag" onclick="this.classList.toggle('on')">Surf</div>
           <div class="tag" onclick="this.classList.toggle('on')">Photography</div>
@@ -521,7 +499,22 @@
           <div class="tag" onclick="this.classList.toggle('on')">Craft beer</div>
           <div class="tag" onclick="this.classList.toggle('on')">Vintage & markets</div>
         </div>
-        <div class="tag-add"><input type="text" id="custom-tag-input" placeholder="Add your own interest..."><button onclick="addTag()">+ Add</button></div>
+        <div class="tag-add" style="margin-bottom:10px"><input type="text" id="custom-tag-input" placeholder="Add your own interest..."><button onclick="addTag()">+ Add</button></div>
+        <div class="field"><label>Tell us more — the more specific, the better your plan</label><textarea placeholder="e.g. I love sauna culture and ice baths, always seek hidden local spots, hate tourist traps..." oninput="updateProgress()"></textarea></div>
+      </div>
+
+      <div class="form-section" data-sec="4b">
+        <div class="section-label">Style — food & drink</div>
+        <div class="tags" style="margin-bottom:10px">
+          <div class="tag" onclick="this.classList.toggle('on')">Street food</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Fine dining</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Local markets</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Cooking classes</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Wine & craft drinks</div>
+          <div class="tag" onclick="this.classList.toggle('on')">Michelin starred</div>
+        </div>
+        <div class="field"><label>Describe your food philosophy when travelling</label><textarea placeholder="e.g. Food is central — I always research the best local spots and I'm open to trying anything once..." oninput="updateProgress()"></textarea></div>
+        <div class="field" style="margin-top:12px;max-width:360px"><label>Dietary restrictions</label><input type="text" placeholder="e.g. vegetarian, halal, no shellfish"></div>
       </div>
 
       <div class="wizard-nav">
@@ -570,9 +563,9 @@
             <select onchange="updateProgress()">
               <option value="">Select...</option>
               <option>Balanced across all categories</option>
-              <option>Splurge on accommodation</option>
-              <option>Splurge on experiences</option>
-              <option>Splurge on food & drink</option>
+              <option>Accommodation first</option>
+              <option>Experiences first</option>
+              <option>Food & drink first</option>
             </select>
           </div>
         </div>
@@ -611,7 +604,7 @@
       <div class="steps-list" id="steps-list">
         <div class="lstep" id="ls0"><div class="step-ind"></div><span class="step-txt">Reading your travel preferences</span></div>
         <div class="lstep" id="ls1"><div class="step-ind"></div><span class="step-txt">Analyzing your passions & interests</span></div>
-        <div class="lstep" id="ls2"><div class="step-ind"></div><span class="step-txt">Finding top experiences in Japan</span></div>
+        <div class="lstep" id="ls2"><div class="step-ind"></div><span class="step-txt" id="ls2-txt">Exploring your destination...</span></div>
         <div class="lstep" id="ls3"><div class="step-ind"></div><span class="step-txt">Building your day-by-day rhythm</span></div>
         <div class="lstep" id="ls4"><div class="step-ind"></div><span class="step-txt">Selecting restaurants & hidden gems</span></div>
         <div class="lstep" id="ls5"><div class="step-ind"></div><span class="step-txt">Calculating routes & travel times</span></div>
@@ -933,6 +926,10 @@ function showOutput() { showScreen('output'); }
 function showLoading() {
   const formData = collectFormData();
   window.tripPlan = null;
+  // Set dynamic destination in loading step
+  const dest = formData.destination || 'your destination';
+  const ls2txt = document.getElementById('ls2-txt');
+  if (ls2txt) ls2txt.textContent = 'Finding top experiences in ' + dest + '...';
   showScreen('loading');
   runLoadingSteps();
   generatePlan(formData);
@@ -969,21 +966,19 @@ function collectFormData() {
   // Travel pace
   const paceProfile = days.map((d,i) => 'Day ' + (i+1) + ': ' + d).join(', ');
 
-  // Experience style
+  // Experience style + Passions (now unified section)
   const expSec = document.querySelector('[data-sec="4-exp"]');
-  const expText = expSec.querySelector('textarea')?.value || '';
-  const expTags = allTagsInSection(expSec);
+  const expText = expSec ? expSec.querySelector('textarea')?.value || '' : '';
+  const allExpTags = expSec ? Array.from(expSec.querySelectorAll('.tag.on')).map(t => t.textContent) : [];
+  const expTags = allExpTags;
+  const passionText = expText;
+  const passionTags = allExpTags;
 
   // Food
   const foodSec = document.querySelector('[data-sec="4b"]');
   const foodText = foodSec?.querySelector('textarea')?.value || '';
-  const foodTags = foodSec ? allTagsInSection(foodSec) : [];
+  const foodTags = foodSec ? Array.from(foodSec.querySelectorAll('.tag.on')).map(t => t.textContent) : [];
   const dietaryInput = foodSec?.querySelector('input[type=text]')?.value || '';
-
-  // Passions
-  const passionSec = document.querySelector('[data-sec="5"]');
-  const passionText = passionSec.querySelector('textarea')?.value || '';
-  const passionTags = allTagsInSection(passionSec);
 
   // Logistics
   const logSec = document.querySelector('[data-sec="6"]');
