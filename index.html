@@ -36,10 +36,56 @@
   .hbtn.primary:hover { background: var(--green-dark); }
 
   /* LAYOUT */
-  .app-body { padding-top: 52px; min-height: 100vh; }
-  .screen { display: none; max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+  .app-body { padding-top: 52px; min-height: 100vh; background: var(--bg-ter); }
+  .screen { display: none; max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
   .screen.active { display: block; }
-  .screen.wide { max-width: 900px; }
+  .screen.wide { max-width: 1100px; }
+
+  /* DESKTOP: full-width two-column layout */
+  @media (min-width: 1024px) {
+    .app-header { padding: 0 2.5rem; }
+    .wizard-header { padding: 14px 2.5rem; }
+
+    /* Form: wider, centered card */
+    #screen-form { max-width: 860px; padding: 2.5rem 2rem; }
+
+    /* Output: two columns — summary left, days right */
+    #screen-output {
+      max-width: 100%;
+      padding: 2rem 2.5rem;
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      grid-template-rows: auto 1fr;
+      gap: 0 2rem;
+      align-items: start;
+    }
+    #screen-output .breadcrumb { grid-column: 1 / -1; }
+    #screen-output .wow-block { grid-column: 1 / -1; }
+    #screen-output .out-section-title:first-of-type { display: none; }
+    .output-left-col {
+      position: sticky;
+      top: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .output-right-col {
+      min-width: 0;
+    }
+    #screen-output .out-footer { grid-column: 1 / -1; }
+
+    /* Detail: more space */
+    #screen-detail { max-width: 100%; padding: 2rem 2.5rem; }
+    .detail-layout { grid-template-columns: 280px 1fr; }
+
+    /* Loading: centered */
+    #screen-loading { max-width: 500px; }
+  }
+
+  @media (min-width: 1280px) {
+    #screen-output { grid-template-columns: 460px 1fr; padding: 2rem 3rem; }
+    #screen-detail { padding: 2rem 3rem; }
+  }
 
   /* WIZARD */
   .wizard-header { position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 14px 1.5rem; z-index: 100; }
@@ -647,6 +693,9 @@
 
     <div class="out-section-title">Plan overview</div>
 
+    <div class="output-left-col">
+      <div class="out-section-title" style="display:block">Plan overview</div>
+
     <div class="sb-row" id="sb-cost">
       <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
       <div class="sb-body">
@@ -748,8 +797,11 @@
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
     </div>
 
-    <div class="divider"></div>
-    <div class="out-section-title">Day by day</div>
+    </div><!-- end output-left-col -->
+
+    <div class="output-right-col">
+      <div class="divider" style="display:none"></div>
+      <div class="out-section-title">Day by day</div>
 
     <div class="days-section">
       <div class="day-list-row" onclick="showDetail(0)"><div class="dl-dot medium">D1</div><div class="dl-body"><div class="dl-meta">Day 1 · Mon 12 May</div><div class="dl-loc">Tokyo · Shinjuku</div><div class="dl-sub">Arrival, neighbourhood walk, yakitori alley at dusk</div></div></div>
@@ -760,6 +812,8 @@
       <div class="day-list-row" onclick="showDetail(5)"><div class="dl-dot intense">D6</div><div class="dl-body"><div class="dl-meta">Day 6 · Sat 17 May</div><div class="dl-loc">Tokyo · Shibuya & Shimokitazawa</div><div class="dl-sub">Crossing, museum, vintage shops, jazz bar, craft ramen</div></div></div>
       <div class="day-list-row" onclick="showDetail(6)"><div class="dl-dot rest">D7</div><div class="dl-body"><div class="dl-meta">Day 7 · Sun 18 May</div><div class="dl-loc">Tokyo · Daikanyama</div><div class="dl-sub">Slow coffee, world's most beautiful bookshop, departure</div></div></div>
     </div>
+
+    </div><!-- end output-right-col -->
 
     <div class="out-footer">
       <button class="out-btn" onclick="goHome()">← Edit preferences</button>
