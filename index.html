@@ -281,7 +281,43 @@
   .out-btn { font-family: var(--font-ui); font-size: 13px; padding: 7px 16px; border-radius: 20px; border: 0.5px solid var(--border-med); background: transparent; color: var(--text-sec); cursor: pointer; transition: all 0.15s; }
   .out-btn:hover { border-color: var(--green); color: var(--green); }
 
-  /* SUBSECTIONS */
+  /* HOMEPAGE STEP 1 */
+  #wpage-1 { padding: 0; margin: -2rem -1.5rem; }
+  .hp-hero { background: linear-gradient(160deg, #0a3d2e 0%, #0F6E56 50%, #1D9E75 100%); min-height: 75vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem 3rem; text-align: center; position: relative; overflow: hidden; }
+  .hp-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+  .hp-eyebrow { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; }
+  .hp-title { font-size: clamp(32px, 6vw, 56px); font-weight: 700; color: white; font-family: var(--font); line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px; }
+  .hp-title span { color: var(--green-light); }
+  .hp-sub { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 2.5rem; max-width: 480px; line-height: 1.6; }
+  .hp-search-box { background: white; border-radius: 16px; padding: 8px 8px 8px 20px; display: flex; align-items: center; gap: 10px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+  .hp-search-box input { flex: 1; font-size: 16px; border: none; outline: none; font-family: var(--font-ui); color: var(--text); background: transparent; }
+  .hp-search-box input::placeholder { color: var(--text-sec); }
+  .hp-search-btn { background: var(--green); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-ui); white-space: nowrap; transition: background 0.15s; }
+  .hp-search-btn:hover { background: var(--green-dark); }
+  .hp-popular { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .hp-chip { font-size: 12px; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 14px; cursor: pointer; transition: all 0.15s; }
+  .hp-chip:hover { background: rgba(255,255,255,0.2); color: white; }
+  .hp-details { background: white; padding: 2rem 2rem 1.5rem; }
+  .hp-details-title { font-size: 13px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; }
+  .hp-dates-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .hp-field { display: flex; flex-direction: column; gap: 5px; }
+  .hp-field label { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.06em; }
+  .hp-field input { font-family: var(--font-ui); font-size: 14px; padding: 10px 12px; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s; }
+  .hp-field input:focus { border-color: var(--green-mid); }
+  .hp-reviews { background: var(--bg-sec); padding: 2rem; border-top: 0.5px solid var(--border); }
+  .hp-reviews-title { font-size: 12px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; text-align: center; }
+  .hp-reviews-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .hp-review { background: white; border-radius: var(--radius-lg); padding: 14px; border: 0.5px solid var(--border); }
+  .hp-review-stars { color: #F5A623; font-size: 12px; margin-bottom: 6px; }
+  .hp-review-text { font-size: 12px; color: var(--text-sec); line-height: 1.5; font-style: italic; margin-bottom: 8px; }
+  .hp-review-author { font-size: 11px; font-weight: 600; color: var(--text); }
+  .hp-review-trip { font-size: 10px; color: var(--text-sec); }
+  .hp-cta-wrap { padding: 1.5rem 2rem 2rem; background: white; }
+  @media (max-width: 480px) {
+    .hp-dates-row { grid-template-columns: 1fr 1fr; }
+    .hp-dates-row .hp-field:last-child { grid-column: 1 / -1; }
+    .hp-reviews-grid { grid-template-columns: 1fr; }
+  }
   .subsection-label { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px; margin-top: 4px; }
   .passions-divider { height: 1px; background: var(--border); margin: 1.25rem 0; }
   .passions-explainer { display: flex; gap: 10px; align-items: flex-start; background: var(--green-pale); border: 0.5px solid var(--green-light); border-radius: var(--radius); padding: 10px 12px; margin-bottom: 12px; font-size: 13px; color: var(--green-dark); line-height: 1.5; }
@@ -496,52 +532,102 @@
   <!-- SCREEN: FORM -->
   <div class="screen active" id="screen-form">
 
-    <!-- STEP 1: YOUR TRIP -->
+    <!-- STEP 1: HOMEPAGE -->
     <div class="wizard-page active" id="wpage-1">
-      <div class="welcome-note"><b>Let's start with the basics.</b> Where are you going and when?</div>
 
-      <div class="form-section" data-sec="1">
-        <div class="section-label">Destination & dates</div>
-        <div class="grid-2" style="margin-bottom:12px">
-          <div class="field"><label>Where do you want to go?</label><input type="text" placeholder="e.g. Japan, Lisbon, Patagonia" oninput="updateProgress()"></div>
-          <div class="field"><label>Number of travellers</label><input type="number" min="1" placeholder="2" oninput="updateProgress()"></div>
+      <!-- HERO -->
+      <div class="hp-hero">
+        <div class="hp-eyebrow">AI Travel Planner</div>
+        <h1 class="hp-title">Where are you going<br><span>next?</span></h1>
+        <p class="hp-sub">Tell TripMind where you want to go. We'll build a plan that's completely yours — your pace, your passions, your budget.</p>
+        <div class="hp-search-box">
+          <input type="text" id="hp-destination" placeholder="City, country or region..." oninput="updateProgress()" autocomplete="off">
+          <button class="hp-search-btn" onclick="focusDetails()">Plan this trip →</button>
         </div>
-        <div class="grid-2">
-          <div class="field">
-            <label>Departure date</label>
-            <input type="date" onchange="updateProgress(); syncDatesWithPace()">
-            <div class="flight-block">
-              <div class="flight-toggle" onclick="toggleFlight('out')"><span class="flight-arrow" id="fa-out">▶</span> Add flight details</div>
-              <div class="flight-details" id="fd-out">
-                <div class="grid-2" style="margin-bottom:8px">
-                  <div class="field"><label>Landing time</label><input type="time"></div>
-                  <div class="field"><label>Arrival airport</label><input type="text" placeholder="e.g. NRT"></div>
-                </div>
-                <div class="flight-note">Landing time helps plan your first day — no activities before you arrive.</div>
-              </div>
+        <div class="hp-popular">
+          <span style="font-size:12px;color:rgba(255,255,255,0.5);align-self:center">Popular:</span>
+          <div class="hp-chip" onclick="setDestination('Japan')">🇯🇵 Japan</div>
+          <div class="hp-chip" onclick="setDestination('Portugal')">🇵🇹 Portugal</div>
+          <div class="hp-chip" onclick="setDestination('Morocco')">🇲🇦 Morocco</div>
+          <div class="hp-chip" onclick="setDestination('Colombia')">🇨🇴 Colombia</div>
+          <div class="hp-chip" onclick="setDestination('Iceland')">🇮🇸 Iceland</div>
+          <div class="hp-chip" onclick="setDestination('Vietnam')">🇻🇳 Vietnam</div>
+        </div>
+      </div>
+
+      <!-- TRIP DETAILS -->
+      <div class="hp-details" id="hp-details-section">
+        <div class="hp-details-title">Trip details</div>
+        <div class="form-section" data-sec="1" style="margin-bottom:0">
+          <div class="hp-dates-row">
+            <div class="hp-field">
+              <label>Departure</label>
+              <input type="date" onchange="updateProgress(); syncDatesWithPace()">
+            </div>
+            <div class="hp-field">
+              <label>Return</label>
+              <input type="date" onchange="updateProgress(); syncDatesWithPace()">
+            </div>
+            <div class="hp-field">
+              <label>Travellers</label>
+              <input type="number" min="1" placeholder="2" oninput="updateProgress()">
             </div>
           </div>
-          <div class="field">
-            <label>Return date</label>
-            <input type="date" onchange="updateProgress(); syncDatesWithPace()">
-            <div class="flight-block">
-              <div class="flight-toggle" onclick="toggleFlight('ret')"><span class="flight-arrow" id="fa-ret">▶</span> Add flight details</div>
+          <div style="margin-top:10px">
+            <div class="flight-toggle" onclick="toggleFlight('out')" style="font-size:12px;color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:5px"><span class="flight-arrow" id="fa-out">▶</span> Add flight details (optional)</div>
+            <div class="flight-details" id="fd-out">
+              <div class="grid-2" style="margin:8px 0">
+                <div class="field"><label>Landing time</label><input type="time"></div>
+                <div class="field"><label>Arrival airport</label><input type="text" placeholder="e.g. NRT"></div>
+              </div>
+              <div class="flight-toggle" onclick="toggleFlight('ret')" style="font-size:12px;color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:4px"><span class="flight-arrow" id="fa-ret">▶</span> Return flight</div>
               <div class="flight-details" id="fd-ret">
-                <div class="grid-2" style="margin-bottom:8px">
+                <div class="grid-2" style="margin:8px 0">
                   <div class="field"><label>Departure time</label><input type="time"></div>
                   <div class="field"><label>Departure airport</label><input type="text" placeholder="e.g. NRT"></div>
                 </div>
-                <div class="flight-note">Departure time determines how much of your last day is usable.</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="wizard-nav">
-        <div></div>
-        <button class="wizard-next" onclick="goToStep(2)">Your style →</button>
+      <!-- CTA -->
+      <div class="hp-cta-wrap">
+        <button class="cta-btn" style="width:100%" onclick="goToStep(2)">Continue — tell us your style →</button>
       </div>
+
+      <!-- REVIEWS -->
+      <div class="hp-reviews">
+        <div class="hp-reviews-title">What travellers say</div>
+        <div class="hp-reviews-grid">
+          <div class="hp-review">
+            <div class="hp-review-stars">★★★★★</div>
+            <div class="hp-review-text">"Found a rooftop onsen I never would have discovered on my own. TripMind knew I was into sauna culture and made it the highlight of day 3."</div>
+            <div class="hp-review-author">Marco T.</div>
+            <div class="hp-review-trip">Tokyo & Hakone, 7 days</div>
+          </div>
+          <div class="hp-review">
+            <div class="hp-review-stars">★★★★★</div>
+            <div class="hp-review-text">"The plan was ready in 30 seconds and felt like it was written by someone who had lived in Lisbon for years. Bookmarked every restaurant."</div>
+            <div class="hp-review-author">Sofia R.</div>
+            <div class="hp-review-trip">Lisbon & Alentejo, 5 days</div>
+          </div>
+          <div class="hp-review">
+            <div class="hp-review-stars">★★★★★</div>
+            <div class="hp-review-text">"Travelling with two kids and it actually accounted for pace and rest days without me asking. That's the detail that got me."</div>
+            <div class="hp-review-author">Lena K.</div>
+            <div class="hp-review-trip">Morocco, 10 days</div>
+          </div>
+          <div class="hp-review">
+            <div class="hp-review-stars">★★★★★</div>
+            <div class="hp-review-text">"Flagged a local festival we had no idea about. We ended up at a 200-year-old village celebration that became the memory of the trip."</div>
+            <div class="hp-review-author">James & Priya</div>
+            <div class="hp-review-trip">Colombia, 12 days</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- STEP 2: YOUR STYLE -->
@@ -1053,8 +1139,22 @@ function goToStep(n) {
     else el.classList.add('inactive');
   }
   document.querySelectorAll('.wstep-line').forEach((l, i) => l.classList.toggle('done', i + 1 < n));
+  // Hide wizard steps bar on step 1 — it's a homepage
+  document.getElementById('progress-bar-wrap').style.display = n === 1 ? 'none' : 'block';
   if (n === 2) { syncDatesWithPace(); renderDays(); }
   window.scrollTo(0, 0);
+}
+
+function setDestination(dest) {
+  const input = document.getElementById('hp-destination');
+  if (input) { input.value = dest; input.focus(); }
+  // Scroll to details section
+  focusDetails();
+}
+
+function focusDetails() {
+  const section = document.getElementById('hp-details-section');
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 function renderDaysScreen(plan) {
   const track = document.getElementById('carousel-track');
@@ -1175,7 +1275,8 @@ function showTab(tab) {
   document.getElementById('tab-bar').classList.toggle('visible', showTabs);
   const isForm = tab === 'form';
   const isLoading = tab === 'loading';
-  document.getElementById('progress-bar-wrap').style.display = isForm ? 'block' : 'none';
+  // On form, wizard bar shown only on steps 2+, not on homepage step 1
+  document.getElementById('progress-bar-wrap').style.display = (isForm && currentStep > 1) ? 'block' : 'none';
   document.getElementById('trip-label').classList.toggle('visible', !isForm && !isLoading);
   document.getElementById('share-btn').classList.toggle('visible', !isForm && !isLoading);
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1205,17 +1306,17 @@ function collectFormData() {
   const allTagsInSection = (sec) => Array.from(sec.querySelectorAll('.tag.on')).map(t => t.textContent);
   const sections = document.querySelectorAll('.form-section');
 
-  // Destination & dates
+  // Destination & dates — from homepage step 1
   const destSection = document.querySelector('[data-sec="1"]');
-  const inputs1 = destSection.querySelectorAll('input');
-  const destination = inputs1[0]?.value || '';
-  const travellers = inputs1[1]?.value || '2';
-  const depDate = inputs1[2]?.value || '';
-  const retDate = inputs1[3]?.value || '';
-  const landingTime = inputs1[4]?.value || '';
-  const arrAirport = inputs1[5]?.value || '';
-  const depTime = inputs1[6]?.value || '';
-  const depAirport = inputs1[7]?.value || '';
+  const inputs1 = destSection ? destSection.querySelectorAll('input') : [];
+  const destination = (document.getElementById('hp-destination')?.value || inputs1[0]?.value || '').trim();
+  const depDate = inputs1[0]?.value || '';
+  const retDate = inputs1[1]?.value || '';
+  const travellers = inputs1[2]?.value || '2';
+  const landingTime = inputs1[3]?.value || '';
+  const arrAirport = inputs1[4]?.value || '';
+  const depTime = inputs1[5]?.value || '';
+  const depAirport = inputs1[6]?.value || '';
 
   // Accommodation
   const accSec = document.querySelector('[data-sec="2"]');
@@ -1591,8 +1692,7 @@ function getDayName(startDate, i) {
 function syncDatesWithPace() {
   const inputs = document.querySelectorAll('[data-sec="1"] input[type=date]');
   const depVal = inputs[0]?.value;
-  const retVal = inputs[1]?.value;
-  if (depVal && retVal) {
+  const retVal = inputs[1]?.value;  if (depVal && retVal) {
     const dep = new Date(depVal);
     const ret = new Date(retVal);
     const diff = Math.round((ret - dep) / (1000*60*60*24));
