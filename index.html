@@ -328,46 +328,22 @@
     .dl-row.active { border-color: var(--green); background: var(--green-pale); }
     .detail-right { padding: 1rem; }
   }
-  /* DAY CAROUSEL + ACCORDION */
+  /* DAY CAROUSEL */
   #screen-days { padding: 0; max-width: 100%; }
-  .carousel-wrap { position: sticky; top: 94px; background: var(--bg); border-bottom: 0.5px solid var(--border); z-index: 90; padding: 12px 0; }
-  .carousel-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 1.5rem; scrollbar-width: none; -ms-overflow-style: none; }
+  .carousel-wrap { background: var(--bg); border-bottom: 0.5px solid var(--border); padding: 20px 0; }
+  .carousel-track { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 1.5rem; scrollbar-width: none; -ms-overflow-style: none; justify-content: flex-start; }
   .carousel-track::-webkit-scrollbar { display: none; }
-  .carousel-card { scroll-snap-align: center; flex-shrink: 0; width: 90px; background: var(--bg-sec); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 10px 6px; cursor: pointer; transition: all 0.15s; text-align: center; }
-  .carousel-card:hover { border-color: var(--green-mid); }
-  .carousel-card.active { border-color: var(--green); background: var(--green-pale); }
-  .cc-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+  .carousel-card { scroll-snap-align: center; flex-shrink: 0; width: 96px; background: var(--bg-sec); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 12px 8px; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .carousel-card:hover { border-color: var(--green-mid); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .carousel-card.active { border-color: var(--green); background: var(--green-pale); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(29,158,117,0.15); }
+  .cc-dot { width: 32px; height: 32px; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
   .cc-dot.intense { background: var(--green-dark); color: white; }
   .cc-dot.medium { background: var(--green-light); color: var(--green-dark); }
-  .cc-dot.rest { background: var(--green-pale); border: 1px solid var(--green-light); color: var(--green-dark); }
-  .cc-date { font-size: 11px; font-weight: 600; color: var(--text); }
+  .cc-dot.rest { background: var(--green-pale); border: 1.5px solid var(--green-light); color: var(--green-dark); }
+  .cc-date { font-size: 12px; font-weight: 600; color: var(--text); }
   .cc-day { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
-  .cc-km { font-size: 9px; color: var(--green-dark); margin-top: 3px; background: var(--green-pale); border-radius: 20px; padding: 1px 5px; display: inline-block; }
-  .accordion-list { max-width: 780px; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
-  .acc-item { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; transition: box-shadow 0.15s; }
-  .acc-item.active { box-shadow: 0 2px 12px rgba(0,0,0,0.07); border-color: var(--green-mid); }
-  .acc-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
-  .acc-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-  .acc-dot.intense { background: var(--green-dark); color: white; }
-  .acc-dot.medium { background: var(--green-light); color: var(--green-dark); }
-  .acc-dot.rest { background: var(--green-pale); border: 1px solid var(--green-light); color: var(--green-dark); }
-  .acc-info { flex: 1; min-width: 0; }
-  .acc-meta { font-size: 11px; color: var(--text-sec); }
-  .acc-loc { font-size: 15px; font-weight: 600; color: var(--text); }
-  .acc-sub { font-size: 12px; color: var(--text-sec); font-style: italic; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .acc-arrow { font-size: 11px; color: var(--text-sec); transition: transform 0.2s; flex-shrink: 0; }
-  .acc-item.active .acc-arrow { transform: rotate(90deg); color: var(--green); }
-  .acc-body { display: none; border-top: 0.5px solid var(--border); padding: 14px 16px; }
-  .acc-item.active .acc-body { display: block; }
-  .acc-activities { display: flex; flex-direction: column; gap: 10px; }
-  .acc-activity { display: flex; gap: 10px; align-items: flex-start; }
-  .acc-time { font-size: 11px; color: var(--text-sec); width: 38px; flex-shrink: 0; padding-top: 2px; }
-  .acc-act-body { flex: 1; }
-  .acc-act-name { font-size: 13px; font-weight: 600; color: var(--text); }
-  .acc-act-desc { font-size: 12px; color: var(--text-sec); margin-top: 2px; line-height: 1.4; }
-  .acc-act-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
-  .acc-detail-btn { margin-top: 12px; font-family: var(--font-ui); font-size: 12px; padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--green); color: var(--green-dark); background: transparent; cursor: pointer; transition: all 0.15s; }
-  .acc-detail-btn:hover { background: var(--green-pale); }
+  .cc-cost { font-size: 9px; color: var(--green-dark); margin-top: 4px; background: var(--green-pale); border-radius: 20px; padding: 1px 6px; display: inline-block; }
+  .days-hint { text-align: center; font-size: 13px; color: var(--text-sec); padding: 2rem 1.5rem; }
 
   /* DETAIL LAYOUT */
   .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
@@ -886,16 +862,9 @@
     <div class="carousel-wrap">
       <div class="carousel-track" id="carousel-track">
         <!-- populated by renderDaysScreen() -->
-        <div class="carousel-card active">
-          <div class="cc-dot medium">D1</div>
-          <div class="cc-date">12 May</div>
-          <div class="cc-day">Mon</div>
-        </div>
       </div>
     </div>
-    <div class="accordion-list" id="accordion-list">
-      <!-- populated by renderDaysScreen() -->
-    </div>
+    <div class="days-hint">Select a day to see the full detail</div>
   </div>
 
   <!-- SCREEN: DAY DETAIL -->
@@ -1071,79 +1040,28 @@ function goToStep(n) {
 }
 function renderDaysScreen(plan) {
   const track = document.getElementById('carousel-track');
-  const list = document.getElementById('accordion-list');
-  if (!track || !list) return;
+  if (!track) return;
 
-  // Build carousel
-  track.innerHTML = plan.days.map((d, i) => {
-    const km = d.dayCost ? d.dayCost + ' km' : '';
-    return '<div class="carousel-card' + (i === 0 ? ' active' : '') + '" id="cc-' + i + '" onclick="selectAccordionDay(' + i + ')">' +
-      '<div class="cc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
-      '<div class="cc-date">' + (d.date ? d.date.split(' ').slice(0,2).join(' ') : 'Day ' + d.dayNum) + '</div>' +
-      '<div class="cc-day">' + (d.date ? d.date.split(' ')[0] : '') + '</div>' +
-      (d.dayCost ? '<div class="cc-km">~€' + d.dayCost + '</div>' : '') +
-      '</div>';
-  }).join('');
-
-  // Build accordion
-  list.innerHTML = plan.days.map((d, i) => {
-    const acts = (d.activities || []).filter(a => a.type !== 'transfer').slice(0, 4);
-    const actHTML = acts.map(a =>
-      '<div class="acc-activity">' +
-      '<div class="acc-time">' + (a.time || '') + '</div>' +
-      '<div class="acc-act-body">' +
-      '<div class="acc-act-name">' + a.name + '</div>' +
-      '<div class="acc-act-desc">' + a.description + '</div>' +
-      '<div class="acc-act-meta">' +
-      (a.duration ? '<span class="act-dur">' + a.duration + '</span>' : '') +
-      (a.cost ? '<span class="act-cost">' + a.cost + '</span>' : '') +
-      '</div></div></div>'
-    ).join('');
-
-    return '<div class="acc-item' + (i === 0 ? ' active' : '') + '" id="acc-' + i + '">' +
-      '<div class="acc-header" onclick="toggleAccordion(' + i + ')">' +
-      '<div class="acc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
-      '<div class="acc-info">' +
-      '<div class="acc-meta">Day ' + d.dayNum + ' · ' + d.date + '</div>' +
-      '<div class="acc-loc">' + d.location + '</div>' +
-      '<div class="acc-sub">' + d.subtitle + '</div>' +
-      '</div>' +
-      '<div class="acc-arrow">▶</div>' +
-      '</div>' +
-      '<div class="acc-body">' +
-      '<div class="acc-activities">' + actHTML + '</div>' +
-      '<button class="acc-detail-btn" onclick="showDetailFromPlan(' + i + ')">Full day detail →</button>' +
-      '</div>' +
-      '</div>';
-  }).join('');
+  track.innerHTML = plan.days.map((d, i) =>
+    '<div class="carousel-card" id="cc-' + i + '" onclick="selectDay(' + i + ')">' +
+    '<div class="cc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
+    '<div class="cc-date">' + (d.date || 'Day ' + d.dayNum) + '</div>' +
+    '<div class="cc-day">' + d.location.split('·')[0].trim() + '</div>' +
+    (d.dayCost ? '<div class="cc-cost">~€' + d.dayCost + '</div>' : '') +
+    '</div>'
+  ).join('');
 }
 
-function toggleAccordion(idx) {
-  const items = document.querySelectorAll('.acc-item');
-  const cards = document.querySelectorAll('.carousel-card');
-  const isOpen = items[idx].classList.contains('active');
-  // Close all
-  items.forEach(item => item.classList.remove('active'));
-  cards.forEach(c => c.classList.remove('active'));
-  if (!isOpen) {
-    items[idx].classList.add('active');
-    cards[idx].classList.add('active');
-    // Scroll carousel card into view
-    const card = document.getElementById('cc-' + idx);
-    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    // Scroll accordion item into view
-    setTimeout(() => items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+function selectDay(idx) {
+  // Highlight card
+  document.querySelectorAll('.carousel-card').forEach(c => c.classList.remove('active'));
+  const card = document.getElementById('cc-' + idx);
+  if (card) {
+    card.classList.add('active');
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }
-}
-
-function selectAccordionDay(idx) {
-  const items = document.querySelectorAll('.acc-item');
-  const cards = document.querySelectorAll('.carousel-card');
-  items.forEach(item => item.classList.remove('active'));
-  cards.forEach(c => c.classList.remove('active'));
-  items[idx].classList.add('active');
-  cards[idx].classList.add('active');
-  setTimeout(() => items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+  // Open detail after brief pause so scroll is visible
+  setTimeout(() => showDetailFromPlan(idx), 200);
 }
 
 function toggleTodoPanel(btn) {
