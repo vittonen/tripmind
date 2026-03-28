@@ -301,6 +301,17 @@
   .hp-search-btn:hover { background: var(--green-dark); }
   .hp-popular { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; position: relative; z-index: 1; }
   .hp-chip { font-size: 12px; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 14px; cursor: pointer; transition: all 0.15s; }
+  .hp-chip:hover { background: rgba(255,255,255,0.22); color: white; }
+  .hp-trip-row { width: 100%; max-width: 560px; margin-top: 12px; position: relative; z-index: 2; }
+  .hp-inline-fields { display: flex; gap: 10px; align-items: stretch; }
+  .hp-inline-field { position: relative; }
+  .date-range-picker.hp-dark { background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.25); color: white; border-radius: 12px; padding: 12px 14px; }
+  .date-range-picker.hp-dark:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.4); }
+  .date-range-picker.hp-dark span { color: rgba(255,255,255,0.9); font-size: 13px; }
+  .date-range-picker.hp-dark svg { color: rgba(255,255,255,0.7); }
+  .hp-travellers-box { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.25); border-radius: 12px; padding: 12px 14px; height: 100%; }
+  .hp-travellers-box svg { color: rgba(255,255,255,0.7); flex-shrink: 0; }
+  .hp-travellers-box input::placeholder { color: rgba(255,255,255,0.6); }
   .date-range-picker { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--bg); cursor: pointer; font-size: 14px; color: var(--text); transition: border-color 0.15s; position: relative; user-select: none; }
   .date-range-picker:hover { border-color: var(--green-mid); }
   .date-range-picker.open { border-color: var(--green); }
@@ -568,10 +579,48 @@
         <div class="hp-eyebrow">AI Travel Planner</div>
         <h1 class="hp-title">Where are you going<br><span>next?</span></h1>
         <p class="hp-sub">Tell TripMind where you want to go. We'll build a plan that's completely yours — your pace, your passions, your budget.</p>
+
+        <!-- MAIN SEARCH BOX -->
         <div class="hp-search-box">
           <input type="text" id="hp-destination" placeholder="City, country or region..." oninput="updateProgress()" autocomplete="off">
-          <button class="hp-search-btn" onclick="focusDetails()">Plan this trip →</button>
+          <button class="hp-search-btn" onclick="goToStep(2)">Plan this trip →</button>
         </div>
+
+        <!-- DATE + TRAVELLERS ROW inside hero -->
+        <div class="hp-trip-row" id="hp-details-section">
+          <div class="form-section" data-sec="1" style="margin:0">
+            <div class="hp-inline-fields">
+              <div class="hp-inline-field" style="flex:2">
+                <div class="date-range-picker hp-dark" id="date-range-picker" onclick="toggleDatePicker()">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
+                  <span id="date-range-label">Add travel dates</span>
+                  <span class="drp-clear" id="drp-clear" onclick="clearDates(event)" style="display:none">✕</span>
+                </div>
+                <input type="hidden" id="dep-date-input">
+                <input type="hidden" id="ret-date-input">
+                <div class="drp-calendar" id="drp-calendar" style="display:none">
+                  <div class="drp-cal-header">
+                    <button class="drp-nav" onclick="calNav(-1)">‹</button>
+                    <span class="drp-month-label" id="drp-month-label"></span>
+                    <button class="drp-nav" onclick="calNav(1)">›</button>
+                  </div>
+                  <div class="drp-cal-days-header">
+                    <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                  </div>
+                  <div class="drp-cal-grid" id="drp-cal-grid"></div>
+                  <div class="drp-hint" id="drp-hint">Select your departure date</div>
+                </div>
+              </div>
+              <div class="hp-inline-field" style="flex:1">
+                <div class="hp-travellers-box">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5"/></svg>
+                  <input type="number" min="1" max="20" placeholder="2 travellers" oninput="updateProgress()" style="background:transparent;border:none;outline:none;font-family:var(--font-ui);font-size:13px;color:white;width:100%;min-width:0">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="hp-popular">
           <span style="font-size:12px;color:rgba(255,255,255,0.5);align-self:center">Popular:</span>
           <div class="hp-chip" onclick="setDestination('Japan')">🇯🇵 Japan</div>
@@ -580,59 +629,6 @@
           <div class="hp-chip" onclick="setDestination('Colombia')">🇨🇴 Colombia</div>
           <div class="hp-chip" onclick="setDestination('Iceland')">🇮🇸 Iceland</div>
           <div class="hp-chip" onclick="setDestination('Vietnam')">🇻🇳 Vietnam</div>
-        </div>
-      </div>
-
-      <!-- TRIP DETAILS -->
-      <div class="hp-details" id="hp-details-section">
-        <div class="hp-details-title">Trip details</div>
-        <div class="form-section" data-sec="1" style="margin-bottom:0">
-          <div class="hp-dates-row">
-            <div class="hp-field" style="grid-column: 1 / 3">
-              <label>Travel dates</label>
-              <div class="date-range-picker" id="date-range-picker" onclick="toggleDatePicker()">
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
-                <span id="date-range-label">Select dates</span>
-                <span class="drp-clear" id="drp-clear" onclick="clearDates(event)" style="display:none">✕</span>
-              </div>
-              <!-- Hidden inputs for form data -->
-              <input type="hidden" id="dep-date-input">
-              <input type="hidden" id="ret-date-input">
-              <!-- Calendar dropdown -->
-              <div class="drp-calendar" id="drp-calendar" style="display:none">
-                <div class="drp-cal-header">
-                  <button class="drp-nav" onclick="calNav(-1)">‹</button>
-                  <span class="drp-month-label" id="drp-month-label"></span>
-                  <button class="drp-nav" onclick="calNav(1)">›</button>
-                </div>
-                <div class="drp-cal-days-header">
-                  <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
-                </div>
-                <div class="drp-cal-grid" id="drp-cal-grid"></div>
-                <div class="drp-hint" id="drp-hint">Select your departure date</div>
-              </div>
-            </div>
-            <div class="hp-field">
-              <label>Travellers</label>
-              <input type="number" min="1" placeholder="2" oninput="updateProgress()">
-            </div>
-          </div>
-          <div style="margin-top:10px">
-            <div class="flight-toggle" onclick="toggleFlight('out')" style="font-size:12px;color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:5px"><span class="flight-arrow" id="fa-out">▶</span> Add flight details (optional)</div>
-            <div class="flight-details" id="fd-out">
-              <div class="grid-2" style="margin:8px 0">
-                <div class="field"><label>Landing time</label><input type="time"></div>
-                <div class="field"><label>Arrival airport</label><input type="text" placeholder="e.g. NRT"></div>
-              </div>
-              <div class="flight-toggle" onclick="toggleFlight('ret')" style="font-size:12px;color:var(--text-sec);cursor:pointer;display:inline-flex;align-items:center;gap:5px;margin-top:4px"><span class="flight-arrow" id="fa-ret">▶</span> Return flight</div>
-              <div class="flight-details" id="fd-ret">
-                <div class="grid-2" style="margin:8px 0">
-                  <div class="field"><label>Departure time</label><input type="time"></div>
-                  <div class="field"><label>Departure airport</label><input type="text" placeholder="e.g. NRT"></div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -833,9 +829,9 @@
             <span class="toggle-lbl">Flights already booked</span>
             <span class="toggle-sub">Exclude flight costs from the budget estimate</span>
           </div>
-          <label class="tog"><input type="checkbox" onchange="toggleFlights()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
+          <label class="tog"><input type="checkbox" checked onchange="toggleFlights()"><div class="tog-track"></div><div class="tog-thumb"></div></label>
         </div>
-        <div class="flights-confirm" id="flights-confirm">Flight costs excluded — budget applies to accommodation, transport, experiences and food only.</div>
+        <div class="flights-confirm show" id="flights-confirm">Flight costs excluded — budget applies to accommodation, transport, experiences and food only.</div>
       </div>
 
       <div class="wizard-nav">
