@@ -41,10 +41,11 @@
   .screen.active { display: block; }
   .screen.wide { max-width: 1100px; }
 
-  /* TAB BAR — shown on output screens */
-  .tab-bar { display: none; position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); z-index: 100; padding: 0 1.5rem; }
-  .tab-bar.visible { display: flex; }
-  .tab-btn { flex: 1; max-width: 180px; padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--text-sec); border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; font-family: var(--font-ui); text-align: center; }
+  /* TAB BAR — always sticky, centered */
+  .tab-bar { display: none; position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); z-index: 100; }
+  .tab-bar.visible { display: flex; justify-content: center; }
+  .tab-bar-inner { display: flex; gap: 0; }
+  .tab-btn { padding: 12px 24px; font-size: 13px; font-weight: 500; color: var(--text-sec); border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; font-family: var(--font-ui); text-align: center; white-space: nowrap; }
   .tab-btn:hover { color: var(--text); }
   .tab-btn.active { color: var(--green-dark); border-bottom-color: var(--green); font-weight: 600; }
   .tab-btn svg { width: 13px; height: 13px; margin-right: 5px; vertical-align: -2px; }
@@ -327,6 +328,48 @@
     .dl-row.active { border-color: var(--green); background: var(--green-pale); }
     .detail-right { padding: 1rem; }
   }
+  /* DAY CAROUSEL + ACCORDION */
+  #screen-days { padding: 0; max-width: 100%; }
+  .carousel-wrap { position: sticky; top: 94px; background: var(--bg); border-bottom: 0.5px solid var(--border); z-index: 90; padding: 12px 0; }
+  .carousel-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 1.5rem; scrollbar-width: none; -ms-overflow-style: none; }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-card { scroll-snap-align: center; flex-shrink: 0; width: 90px; background: var(--bg-sec); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 10px 6px; cursor: pointer; transition: all 0.15s; text-align: center; }
+  .carousel-card:hover { border-color: var(--green-mid); }
+  .carousel-card.active { border-color: var(--green); background: var(--green-pale); }
+  .cc-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+  .cc-dot.intense { background: var(--green-dark); color: white; }
+  .cc-dot.medium { background: var(--green-light); color: var(--green-dark); }
+  .cc-dot.rest { background: var(--green-pale); border: 1px solid var(--green-light); color: var(--green-dark); }
+  .cc-date { font-size: 11px; font-weight: 600; color: var(--text); }
+  .cc-day { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
+  .cc-km { font-size: 9px; color: var(--green-dark); margin-top: 3px; background: var(--green-pale); border-radius: 20px; padding: 1px 5px; display: inline-block; }
+  .accordion-list { max-width: 780px; margin: 0 auto; padding: 1rem 1.5rem 2rem; }
+  .acc-item { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; overflow: hidden; transition: box-shadow 0.15s; }
+  .acc-item.active { box-shadow: 0 2px 12px rgba(0,0,0,0.07); border-color: var(--green-mid); }
+  .acc-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
+  .acc-dot { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .acc-dot.intense { background: var(--green-dark); color: white; }
+  .acc-dot.medium { background: var(--green-light); color: var(--green-dark); }
+  .acc-dot.rest { background: var(--green-pale); border: 1px solid var(--green-light); color: var(--green-dark); }
+  .acc-info { flex: 1; min-width: 0; }
+  .acc-meta { font-size: 11px; color: var(--text-sec); }
+  .acc-loc { font-size: 15px; font-weight: 600; color: var(--text); }
+  .acc-sub { font-size: 12px; color: var(--text-sec); font-style: italic; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acc-arrow { font-size: 11px; color: var(--text-sec); transition: transform 0.2s; flex-shrink: 0; }
+  .acc-item.active .acc-arrow { transform: rotate(90deg); color: var(--green); }
+  .acc-body { display: none; border-top: 0.5px solid var(--border); padding: 14px 16px; }
+  .acc-item.active .acc-body { display: block; }
+  .acc-activities { display: flex; flex-direction: column; gap: 10px; }
+  .acc-activity { display: flex; gap: 10px; align-items: flex-start; }
+  .acc-time { font-size: 11px; color: var(--text-sec); width: 38px; flex-shrink: 0; padding-top: 2px; }
+  .acc-act-body { flex: 1; }
+  .acc-act-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .acc-act-desc { font-size: 12px; color: var(--text-sec); margin-top: 2px; line-height: 1.4; }
+  .acc-act-meta { display: flex; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+  .acc-detail-btn { margin-top: 12px; font-family: var(--font-ui); font-size: 12px; padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--green); color: var(--green-dark); background: transparent; cursor: pointer; transition: all 0.15s; }
+  .acc-detail-btn:hover { background: var(--green-pale); }
+
+  /* DETAIL LAYOUT */
   .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
   .detail-left { border-right: 0.5px solid var(--border); padding: 1rem; background: var(--bg-sec); overflow-y: auto; }
   .dl-title { font-size: 11px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem; }
@@ -713,18 +756,20 @@
   <!-- SCREEN: OUTPUT -->
   <!-- TAB BAR (overview + days) -->
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn" id="tab-form" onclick="showTab('form')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
-      Plan your trip
-    </button>
-    <button class="tab-btn active" id="tab-overview" onclick="showTab('overview')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
-      Overview
-    </button>
-    <button class="tab-btn" id="tab-days" onclick="showTab('days')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
-      Day by day
-    </button>
+    <div class="tab-bar-inner">
+      <button class="tab-btn" id="tab-form" onclick="showTab('form')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+        Plan your trip
+      </button>
+      <button class="tab-btn active" id="tab-overview" onclick="showTab('overview')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+        Overview
+      </button>
+      <button class="tab-btn" id="tab-days" onclick="showTab('days')">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
+        Day by day
+      </button>
+    </div>
   </div>
 
   <!-- SCREEN: OVERVIEW -->
@@ -838,17 +883,18 @@
 
   <!-- SCREEN: DAYS -->
   <div class="screen" id="screen-days">
-    <div class="days-section">
-      <div class="day-list-row" onclick="showDetail(0)"><div class="dl-dot medium">D1</div><div class="dl-body"><div class="dl-meta">Day 1 · Mon 12 May</div><div class="dl-loc">Tokyo · Shinjuku</div><div class="dl-sub">Arrival, neighbourhood walk, yakitori alley at dusk</div></div></div>
-      <div class="day-list-row" onclick="showDetail(1)"><div class="dl-dot rest">D2</div><div class="dl-body"><div class="dl-meta">Day 2 · Tue 13 May</div><div class="dl-loc">Tokyo · Asakusa & Yanaka</div><div class="dl-sub">Temples at dawn, vintage streets, slow afternoon</div></div></div>
-      <div class="day-list-row" onclick="showDetail(2)"><div class="dl-dot medium">D3</div><div class="dl-body"><div class="dl-meta">Day 3 · Wed 14 May</div><div class="dl-loc">Hakone · National Park</div><div class="dl-sub">Volcanic valley, ropeway, ryokan with private onsen</div></div></div>
-      <div class="day-list-row" onclick="showDetail(3)"><div class="dl-dot intense">D4</div><div class="dl-body"><div class="dl-meta">Day 4 · Thu 15 May</div><div class="dl-loc">Kyoto · Arashiyama & Fushimi Inari</div><div class="dl-sub">Bamboo grove at dawn, full hike up 10,000 torii gates</div></div></div>
-      <div class="day-list-row" onclick="showDetail(4)"><div class="dl-dot intense">D5</div><div class="dl-body"><div class="dl-meta">Day 5 · Fri 16 May</div><div class="dl-loc">Nara · Nara Park</div><div class="dl-sub">Giant Buddha, deer park, refined garden off the tourist path</div></div></div>
-      <div class="day-list-row" onclick="showDetail(5)"><div class="dl-dot intense">D6</div><div class="dl-body"><div class="dl-meta">Day 6 · Sat 17 May</div><div class="dl-loc">Tokyo · Shibuya & Shimokitazawa</div><div class="dl-sub">Crossing, museum, vintage shops, jazz bar, craft ramen</div></div></div>
-      <div class="day-list-row" onclick="showDetail(6)"><div class="dl-dot rest">D7</div><div class="dl-body"><div class="dl-meta">Day 7 · Sun 18 May</div><div class="dl-loc">Tokyo · Daikanyama</div><div class="dl-sub">Slow coffee, world's most beautiful bookshop, departure</div></div></div>
+    <div class="carousel-wrap">
+      <div class="carousel-track" id="carousel-track">
+        <!-- populated by renderDaysScreen() -->
+        <div class="carousel-card active">
+          <div class="cc-dot medium">D1</div>
+          <div class="cc-date">12 May</div>
+          <div class="cc-day">Mon</div>
+        </div>
+      </div>
     </div>
-    <div class="out-footer">
-      <button class="out-btn" onclick="showTab('overview')">← Overview</button>
+    <div class="accordion-list" id="accordion-list">
+      <!-- populated by renderDaysScreen() -->
     </div>
   </div>
 
@@ -1023,6 +1069,83 @@ function goToStep(n) {
   if (n === 2) { syncDatesWithPace(); renderDays(); }
   window.scrollTo(0, 0);
 }
+function renderDaysScreen(plan) {
+  const track = document.getElementById('carousel-track');
+  const list = document.getElementById('accordion-list');
+  if (!track || !list) return;
+
+  // Build carousel
+  track.innerHTML = plan.days.map((d, i) => {
+    const km = d.dayCost ? d.dayCost + ' km' : '';
+    return '<div class="carousel-card' + (i === 0 ? ' active' : '') + '" id="cc-' + i + '" onclick="selectAccordionDay(' + i + ')">' +
+      '<div class="cc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
+      '<div class="cc-date">' + (d.date ? d.date.split(' ').slice(0,2).join(' ') : 'Day ' + d.dayNum) + '</div>' +
+      '<div class="cc-day">' + (d.date ? d.date.split(' ')[0] : '') + '</div>' +
+      (d.dayCost ? '<div class="cc-km">~€' + d.dayCost + '</div>' : '') +
+      '</div>';
+  }).join('');
+
+  // Build accordion
+  list.innerHTML = plan.days.map((d, i) => {
+    const acts = (d.activities || []).filter(a => a.type !== 'transfer').slice(0, 4);
+    const actHTML = acts.map(a =>
+      '<div class="acc-activity">' +
+      '<div class="acc-time">' + (a.time || '') + '</div>' +
+      '<div class="acc-act-body">' +
+      '<div class="acc-act-name">' + a.name + '</div>' +
+      '<div class="acc-act-desc">' + a.description + '</div>' +
+      '<div class="acc-act-meta">' +
+      (a.duration ? '<span class="act-dur">' + a.duration + '</span>' : '') +
+      (a.cost ? '<span class="act-cost">' + a.cost + '</span>' : '') +
+      '</div></div></div>'
+    ).join('');
+
+    return '<div class="acc-item' + (i === 0 ? ' active' : '') + '" id="acc-' + i + '">' +
+      '<div class="acc-header" onclick="toggleAccordion(' + i + ')">' +
+      '<div class="acc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
+      '<div class="acc-info">' +
+      '<div class="acc-meta">Day ' + d.dayNum + ' · ' + d.date + '</div>' +
+      '<div class="acc-loc">' + d.location + '</div>' +
+      '<div class="acc-sub">' + d.subtitle + '</div>' +
+      '</div>' +
+      '<div class="acc-arrow">▶</div>' +
+      '</div>' +
+      '<div class="acc-body">' +
+      '<div class="acc-activities">' + actHTML + '</div>' +
+      '<button class="acc-detail-btn" onclick="showDetailFromPlan(' + i + ')">Full day detail →</button>' +
+      '</div>' +
+      '</div>';
+  }).join('');
+}
+
+function toggleAccordion(idx) {
+  const items = document.querySelectorAll('.acc-item');
+  const cards = document.querySelectorAll('.carousel-card');
+  const isOpen = items[idx].classList.contains('active');
+  // Close all
+  items.forEach(item => item.classList.remove('active'));
+  cards.forEach(c => c.classList.remove('active'));
+  if (!isOpen) {
+    items[idx].classList.add('active');
+    cards[idx].classList.add('active');
+    // Scroll carousel card into view
+    const card = document.getElementById('cc-' + idx);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    // Scroll accordion item into view
+    setTimeout(() => items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+  }
+}
+
+function selectAccordionDay(idx) {
+  const items = document.querySelectorAll('.acc-item');
+  const cards = document.querySelectorAll('.carousel-card');
+  items.forEach(item => item.classList.remove('active'));
+  cards.forEach(c => c.classList.remove('active'));
+  items[idx].classList.add('active');
+  cards[idx].classList.add('active');
+  setTimeout(() => items[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
 function toggleTodoPanel(btn) {
   btn.classList.toggle('open');
   document.getElementById('todo-panel-body').classList.toggle('open');
@@ -1031,23 +1154,17 @@ function toggleTodoPanel(btn) {
 function showOutput() { showTab('overview'); }
 
 function showTab(tab) {
-  // Hide all screens
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  // Show correct screen
   const screenMap = { form: 'screen-form', overview: 'screen-overview', days: 'screen-days', loading: 'screen-loading', detail: 'screen-detail' };
   const screenId = screenMap[tab] || 'screen-overview';
   document.getElementById(screenId).classList.add('active');
-  // Tab bar visibility
-  const isOutput = tab === 'overview' || tab === 'days';
-  const tabBar = document.getElementById('tab-bar');
-  tabBar.classList.toggle('visible', isOutput);
-  // Header elements
+  const showTabs = tab !== 'form' && tab !== 'loading';
+  document.getElementById('tab-bar').classList.toggle('visible', showTabs);
   const isForm = tab === 'form';
   const isLoading = tab === 'loading';
   document.getElementById('progress-bar-wrap').style.display = isForm ? 'block' : 'none';
   document.getElementById('trip-label').classList.toggle('visible', !isForm && !isLoading);
   document.getElementById('share-btn').classList.toggle('visible', !isForm && !isLoading);
-  // Active tab button
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   const activeBtn = document.getElementById('tab-' + tab);
   if (activeBtn) activeBtn.classList.add('active');
@@ -1302,7 +1419,11 @@ function renderOutput(plan) {
           ${d.deviationNote ? `<div class="dev-pill">${d.deviationNote}</div>` : ''}
         </div>
       </div>`).join('');
-    document.querySelector('.days-section').innerHTML = daysHTML;
+    const daysSection = document.querySelector('.days-section');
+    if (daysSection) daysSection.innerHTML = daysHTML;
+
+    // Render carousel + accordion in screen-days
+    renderDaysScreen(plan);
 
     // Update detail left panel
     window.tripPlan = plan;
