@@ -40,52 +40,28 @@
   .screen { display: none; max-width: 780px; margin: 0 auto; padding: 2rem 1.5rem; }
   .screen.active { display: block; }
   .screen.wide { max-width: 1100px; }
-  #screen-output.active { display: grid; }
-  #screen-output:not(.active) { display: none !important; }
 
-  /* DESKTOP: full-width two-column layout */
+  /* TAB BAR — shown on output screens */
+  .tab-bar { display: none; position: sticky; top: 52px; background: var(--bg); border-bottom: 0.5px solid var(--border); z-index: 100; padding: 0 1.5rem; }
+  .tab-bar.visible { display: flex; }
+  .tab-btn { flex: 1; max-width: 180px; padding: 12px 16px; font-size: 13px; font-weight: 500; color: var(--text-sec); border: none; background: transparent; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; font-family: var(--font-ui); text-align: center; }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--green-dark); border-bottom-color: var(--green); font-weight: 600; }
+  .tab-btn svg { width: 13px; height: 13px; margin-right: 5px; vertical-align: -2px; }
+
+  /* DESKTOP */
   @media (min-width: 1024px) {
     .app-header { padding: 0 2.5rem; }
     .wizard-header { padding: 14px 2.5rem; }
-
-    /* Form: wider, centered card */
+    .tab-bar { padding: 0 2.5rem; }
     #screen-form { max-width: 860px; padding: 2.5rem 2rem; }
-
-    /* Output: two columns — summary left, days right */
-    #screen-output {
-      max-width: 100%;
-      padding: 2rem 2.5rem;
-      display: grid;
-      grid-template-columns: 420px 1fr;
-      grid-template-rows: auto 1fr;
-      gap: 0 2rem;
-      align-items: start;
-    }
-    #screen-output .breadcrumb { grid-column: 1 / -1; }
-    #screen-output .wow-block { grid-column: 1 / -1; }
-    #screen-output .out-section-title:first-of-type { display: none; }
-    .output-left-col {
-      position: sticky;
-      top: 120px;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .output-right-col {
-      min-width: 0;
-    }
-    #screen-output .out-footer { grid-column: 1 / -1; }
-
-    /* Detail: more space */
     #screen-detail { max-width: 100%; padding: 2rem 2.5rem; }
     .detail-layout { grid-template-columns: 280px 1fr; }
-
-    /* Loading: centered */
     #screen-loading { max-width: 500px; }
+    #screen-overview { max-width: 860px; }
+    #screen-days { max-width: 860px; }
   }
-
   @media (min-width: 1280px) {
-    #screen-output { grid-template-columns: 460px 1fr; padding: 2rem 3rem; }
     #screen-detail { padding: 2rem 3rem; }
   }
 
@@ -735,13 +711,24 @@
   </div>
 
   <!-- SCREEN: OUTPUT -->
-  <div class="screen" id="screen-output">
-    <div class="breadcrumb">
-      <span class="bc-link" onclick="goHome()">Form</span>
-      <span class="bc-sep">›</span>
-      <span class="bc-active">Your plan</span>
-    </div>
+  <!-- TAB BAR (overview + days) -->
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn" id="tab-form" onclick="showTab('form')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h5"/></svg>
+      Plan your trip
+    </button>
+    <button class="tab-btn active" id="tab-overview" onclick="showTab('overview')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+      Overview
+    </button>
+    <button class="tab-btn" id="tab-days" onclick="showTab('days')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
+      Day by day
+    </button>
+  </div>
 
+  <!-- SCREEN: OVERVIEW -->
+  <div class="screen" id="screen-overview">
     <div class="wow-block">
       <div class="wow-ready"><div class="wow-dot"></div>Your plan is ready</div>
       <div class="wow-destination" id="wow-destination">Japan</div>
@@ -750,11 +737,6 @@
         <span>12–19 May 2025</span><span>·</span><span>2 travellers</span><span>·</span><span>7 days</span>
       </div>
     </div>
-
-    <div class="out-section-title">Plan overview</div>
-
-    <div class="output-left-col">
-      <div class="out-section-title" style="display:block">Plan overview</div>
 
     <div class="sb-row" id="sb-cost">
       <div class="sb-icon"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l2.5 2.5"/></svg></div>
@@ -774,9 +756,9 @@
         <div class="sb-value">3 cities — Tokyo (3 nights), Hakone (1 night), Kyoto/Nara (2 nights)</div>
         <div class="sb-note">Average 2.3 nights per location — no daily moves required</div>
         <div class="transport-row" id="transport-row" style="margin-top:8px">
-          <div class="tr-pill req"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/></svg>Rental car</div>
+          <div class="tr-pill req">Rental car</div>
           <span style="color:var(--text-sec)">→</span>
-          <div class="tr-pill rec"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="7" rx="1.5"/><path d="M4 12v1M12 12v1M1 9h14"/><circle cx="4" cy="8" r="0.8" fill="currentColor"/><circle cx="12" cy="8" r="0.8" fill="currentColor"/></svg>Shinkansen — faster & cheaper</div>
+          <div class="tr-pill rec">Shinkansen — faster & cheaper</div>
         </div>
         <div class="sb-good">Good rhythm — you unpack only 3 times in 7 days</div>
       </div>
@@ -802,7 +784,7 @@
             <div class="out-li"><div class="out-ldot" style="background:var(--green-light)"></div>Medium</div>
             <div class="out-li"><div class="out-ldot" style="background:var(--green-pale);border:0.5px solid var(--green-light)"></div>Rest</div>
           </div>
-          <div class="pace-alert">Days 4–5 are both intense — two unmissable experiences on consecutive days. Your preference was balanced.</div>
+          <div class="pace-alert" style="display:none"></div>
         </div>
       </div>
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
@@ -830,50 +812,13 @@
         <div class="passions-cards" id="passions-cards">
           <div class="passion-card">
             <div class="passion-icon">♨️</div>
-            <div class="passion-info">
-              <div class="passion-name">Sauna & ice bath</div>
-              <div class="passion-where">Hakone ryokan onsen · Day 3</div>
-            </div>
-            <div class="passion-status ok">✓</div>
-          </div>
-          <div class="passion-card">
-            <div class="passion-icon">🎷</div>
-            <div class="passion-info">
-              <div class="passion-name">Jazz & live music</div>
-              <div class="passion-where">Jazz bar Shimokitazawa · Day 6</div>
-            </div>
-            <div class="passion-status ok">✓</div>
-          </div>
-          <div class="passion-card">
-            <div class="passion-icon">🍺</div>
-            <div class="passion-info">
-              <div class="passion-name">Craft beer</div>
-              <div class="passion-where">Yona Yona Beer Works · Day 2</div>
-            </div>
+            <div class="passion-info"><div class="passion-name">Sauna & ice bath</div><div class="passion-where">Hakone ryokan onsen · Day 3</div></div>
             <div class="passion-status ok">✓</div>
           </div>
         </div>
       </div>
       <div class="sb-right"><button class="adj-btn">Adjust ↗</button></div>
     </div>
-
-    </div><!-- end output-left-col -->
-
-    <div class="output-right-col">
-      <div class="divider" style="display:none"></div>
-      <div class="out-section-title">Day by day</div>
-
-    <div class="days-section">
-      <div class="day-list-row" onclick="showDetail(0)"><div class="dl-dot medium">D1</div><div class="dl-body"><div class="dl-meta">Day 1 · Mon 12 May</div><div class="dl-loc">Tokyo · Shinjuku</div><div class="dl-sub">Arrival, neighbourhood walk, yakitori alley at dusk</div></div></div>
-      <div class="day-list-row" onclick="showDetail(1)"><div class="dl-dot rest">D2</div><div class="dl-body"><div class="dl-meta">Day 2 · Tue 13 May</div><div class="dl-loc">Tokyo · Asakusa & Yanaka</div><div class="dl-sub">Temples at dawn, vintage streets, slow afternoon</div></div></div>
-      <div class="day-list-row" onclick="showDetail(2)"><div class="dl-dot medium">D3</div><div class="dl-body"><div class="dl-meta">Day 3 · Wed 14 May</div><div class="dl-loc">Hakone · National Park</div><div class="dl-sub">Volcanic valley, ropeway, ryokan with private onsen</div></div></div>
-      <div class="day-list-row" onclick="showDetail(3)"><div class="dl-dot intense">D4</div><div class="dl-body"><div class="dl-meta">Day 4 · Thu 15 May</div><div class="dl-loc">Kyoto · Arashiyama & Fushimi Inari</div><div class="dl-sub">Bamboo grove at dawn, full hike up 10,000 torii gates</div><div class="dev-pill">Heads up: two intense days in a row</div></div></div>
-      <div class="day-list-row" onclick="showDetail(4)"><div class="dl-dot intense">D5</div><div class="dl-body"><div class="dl-meta">Day 5 · Fri 16 May</div><div class="dl-loc">Nara · Nara Park</div><div class="dl-sub">Giant Buddha, deer park, refined garden off the tourist path</div></div></div>
-      <div class="day-list-row" onclick="showDetail(5)"><div class="dl-dot intense">D6</div><div class="dl-body"><div class="dl-meta">Day 6 · Sat 17 May</div><div class="dl-loc">Tokyo · Shibuya & Shimokitazawa</div><div class="dl-sub">Crossing, museum, vintage shops, jazz bar, craft ramen</div></div></div>
-      <div class="day-list-row" onclick="showDetail(6)"><div class="dl-dot rest">D7</div><div class="dl-body"><div class="dl-meta">Day 7 · Sun 18 May</div><div class="dl-loc">Tokyo · Daikanyama</div><div class="dl-sub">Slow coffee, world's most beautiful bookshop, departure</div></div></div>
-    </div>
-
-    </div><!-- end output-right-col -->
 
     <div class="todo-panel-wrap">
       <div class="todo-panel-toggle" onclick="toggleTodoPanel(this)">
@@ -887,7 +832,23 @@
     </div>
 
     <div class="out-footer">
-      <button class="out-btn" onclick="goHome()">← Edit preferences</button>
+      <button class="out-btn" onclick="showTab('days')">Day by day →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: DAYS -->
+  <div class="screen" id="screen-days">
+    <div class="days-section">
+      <div class="day-list-row" onclick="showDetail(0)"><div class="dl-dot medium">D1</div><div class="dl-body"><div class="dl-meta">Day 1 · Mon 12 May</div><div class="dl-loc">Tokyo · Shinjuku</div><div class="dl-sub">Arrival, neighbourhood walk, yakitori alley at dusk</div></div></div>
+      <div class="day-list-row" onclick="showDetail(1)"><div class="dl-dot rest">D2</div><div class="dl-body"><div class="dl-meta">Day 2 · Tue 13 May</div><div class="dl-loc">Tokyo · Asakusa & Yanaka</div><div class="dl-sub">Temples at dawn, vintage streets, slow afternoon</div></div></div>
+      <div class="day-list-row" onclick="showDetail(2)"><div class="dl-dot medium">D3</div><div class="dl-body"><div class="dl-meta">Day 3 · Wed 14 May</div><div class="dl-loc">Hakone · National Park</div><div class="dl-sub">Volcanic valley, ropeway, ryokan with private onsen</div></div></div>
+      <div class="day-list-row" onclick="showDetail(3)"><div class="dl-dot intense">D4</div><div class="dl-body"><div class="dl-meta">Day 4 · Thu 15 May</div><div class="dl-loc">Kyoto · Arashiyama & Fushimi Inari</div><div class="dl-sub">Bamboo grove at dawn, full hike up 10,000 torii gates</div></div></div>
+      <div class="day-list-row" onclick="showDetail(4)"><div class="dl-dot intense">D5</div><div class="dl-body"><div class="dl-meta">Day 5 · Fri 16 May</div><div class="dl-loc">Nara · Nara Park</div><div class="dl-sub">Giant Buddha, deer park, refined garden off the tourist path</div></div></div>
+      <div class="day-list-row" onclick="showDetail(5)"><div class="dl-dot intense">D6</div><div class="dl-body"><div class="dl-meta">Day 6 · Sat 17 May</div><div class="dl-loc">Tokyo · Shibuya & Shimokitazawa</div><div class="dl-sub">Crossing, museum, vintage shops, jazz bar, craft ramen</div></div></div>
+      <div class="day-list-row" onclick="showDetail(6)"><div class="dl-dot rest">D7</div><div class="dl-body"><div class="dl-meta">Day 7 · Sun 18 May</div><div class="dl-loc">Tokyo · Daikanyama</div><div class="dl-sub">Slow coffee, world's most beautiful bookshop, departure</div></div></div>
+    </div>
+    <div class="out-footer">
+      <button class="out-btn" onclick="showTab('overview')">← Overview</button>
     </div>
   </div>
 
@@ -1045,17 +1006,8 @@
 <script>
 // SCREEN MANAGEMENT
 let currentStep = 1;
-function goHome() { showScreen('form'); goToStep(1); }
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + name).classList.add('active');
-  const isForm = name === 'form';
-  const isLoading = name === 'loading';
-  document.getElementById('progress-bar-wrap').style.display = isForm ? 'block' : 'none';
-  document.getElementById('trip-label').classList.toggle('visible', !isForm && !isLoading);
-  document.getElementById('share-btn').classList.toggle('visible', !isForm && !isLoading);
-  window.scrollTo(0, 0);
-}
+function goHome() { showTab('form'); goToStep(1); }
+function showScreen(name) { showTab(name); }
 function goToStep(n) {
   currentStep = n;
   document.querySelectorAll('.wizard-page').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
@@ -1076,21 +1028,44 @@ function toggleTodoPanel(btn) {
   document.getElementById('todo-panel-body').classList.toggle('open');
 }
 
-function showOutput() { showScreen('output'); }
+function showOutput() { showTab('overview'); }
+
+function showTab(tab) {
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // Show correct screen
+  const screenMap = { form: 'screen-form', overview: 'screen-overview', days: 'screen-days', loading: 'screen-loading', detail: 'screen-detail' };
+  const screenId = screenMap[tab] || 'screen-overview';
+  document.getElementById(screenId).classList.add('active');
+  // Tab bar visibility
+  const isOutput = tab === 'overview' || tab === 'days';
+  const tabBar = document.getElementById('tab-bar');
+  tabBar.classList.toggle('visible', isOutput);
+  // Header elements
+  const isForm = tab === 'form';
+  const isLoading = tab === 'loading';
+  document.getElementById('progress-bar-wrap').style.display = isForm ? 'block' : 'none';
+  document.getElementById('trip-label').classList.toggle('visible', !isForm && !isLoading);
+  document.getElementById('share-btn').classList.toggle('visible', !isForm && !isLoading);
+  // Active tab button
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('tab-' + tab);
+  if (activeBtn) activeBtn.classList.add('active');
+  window.scrollTo(0, 0);
+}
 function showLoading() {
   const formData = collectFormData();
   window.tripPlan = null;
-  // Set dynamic destination in loading step
   const dest = formData.destination || 'your destination';
   const ls2txt = document.getElementById('ls2-txt');
   if (ls2txt) ls2txt.textContent = 'Finding top experiences in ' + dest + '...';
-  showScreen('loading');
+  showTab('loading');
   runLoadingSteps();
   generatePlan(formData);
 }
 function showDetail(dayIdx) {
   if (window.tripPlan) { showDetailFromPlan(dayIdx); return; }
-  showScreen('detail');
+  showTab('detail');
   document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === dayIdx));
 }
 // COLLECT FORM DATA
@@ -1316,8 +1291,8 @@ function renderOutput(plan) {
       }
     }
 
-    // Day by day list
-    document.querySelector('.days-section').innerHTML = plan.days.map((d, i) => `
+    // Day by day list — populate screen-days
+    const daysHTML = plan.days.map((d, i) => `
       <div class="day-list-row" onclick="showDetailFromPlan(${i})">
         <div class="dl-dot ${d.intensity}">D${d.dayNum}</div>
         <div class="dl-body">
@@ -1327,6 +1302,7 @@ function renderOutput(plan) {
           ${d.deviationNote ? `<div class="dev-pill">${d.deviationNote}</div>` : ''}
         </div>
       </div>`).join('');
+    document.querySelector('.days-section').innerHTML = daysHTML;
 
     // Update detail left panel
     window.tripPlan = plan;
@@ -1349,7 +1325,7 @@ function renderOutput(plan) {
 
 // RENDER DAY DETAIL FROM PLAN
 function showDetailFromPlan(idx) {
-  showScreen('detail');
+  showTab('detail');
   if (!window.tripPlan) return;
   const d = window.tripPlan.days[idx];
 
@@ -1498,17 +1474,17 @@ async function generatePlan(formData) {
     clearTimeout(window._loadingTimer);
     window.tripPlan = plan;
     renderOutput(plan);
-    showScreen('output');
+    showTab('overview');
   } catch(e) {
     console.error('AI error:', e);
     const lpText = document.getElementById('lp-text');
     if (lpText) lpText.textContent = 'Error: ' + e.message;
-    setTimeout(() => showScreen('output'), 2000);
+    setTimeout(() => showTab('overview'), 2000);
   }
 }
 function showDetail(dayIdx) {
   if (window.tripPlan) { showDetailFromPlan(dayIdx); return; }
-  showScreen('detail');
+  showTab('detail');
   document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === dayIdx));
 }
 
@@ -1703,7 +1679,7 @@ function toggleEdit() {
 }
 
 // INIT — runs after full DOM is parsed
-showScreen('form');
+showTab('form');
 goToStep(1);
 renderDays();
 document.getElementById('leg-intense').onclick = () => selMode2('intense');
