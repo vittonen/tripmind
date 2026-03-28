@@ -94,8 +94,8 @@
   .progress-label { font-size: 12px; color: var(--text-sec); white-space: nowrap; }
 
   /* FORM */
-  .welcome-note { font-size: 13px; color: var(--text-sec); background: var(--bg-sec); border-radius: var(--radius); padding: 10px 14px; margin-bottom: 1.5rem; line-height: 1.6; }
-  .welcome-note b { color: var(--text); font-weight: 600; }
+  .welcome-note { font-size: 14px; color: var(--text); background: var(--bg); border-left: 3px solid var(--green); border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; margin-bottom: 1.75rem; line-height: 1.6; }
+  .welcome-note b { color: var(--green-dark); font-weight: 700; }
   .form-section { margin-bottom: 2rem; }
   .section-label { font-size: 11px; font-weight: 600; color: var(--text-sec); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 0.5px solid var(--border); }
   .grid-2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
@@ -125,8 +125,12 @@
 
   /* TRAVEL PACE */
   .pace-block { background: var(--bg-sec); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-top: 10px; }
-  .pace-onboarding { font-size: 12px; color: var(--text-sec); background: var(--bg); border: 0.5px solid var(--border-med); border-radius: var(--radius); padding: 8px 12px; margin-bottom: 12px; line-height: 1.5; }
-  .pace-notice { font-size: 12px; color: var(--text-sec); margin-bottom: 10px; }
+  .pace-onboarding { font-size: 13px; color: var(--green-dark); background: var(--green-pale); border: 0.5px solid var(--green-light); border-radius: var(--radius); padding: 12px 14px 12px 40px; margin-bottom: 12px; line-height: 1.6; position: relative; }
+  .pace-onboarding::before { content: 'ⓘ'; position: absolute; left: 14px; top: 12px; font-size: 15px; color: var(--green-dark); }
+  .pace-onboarding b { color: var(--green-dark); font-weight: 700; }
+  .pace-notice { font-size: 12px; color: var(--green-dark); background: var(--green-pale); border-radius: var(--radius); padding: 7px 12px 7px 32px; margin-bottom: 12px; position: relative; }
+  .pace-notice::before { content: '✓'; position: absolute; left: 12px; font-weight: 700; }
+  .pace-notice b { font-weight: 700; }
   .trip-length { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-size: 13px; color: var(--text-sec); }
   .trip-length button { width: 26px; height: 26px; border-radius: 50%; border: 0.5px solid var(--border-med); background: transparent; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-sec); line-height: 1; transition: all 0.15s; }
   .trip-length button:hover { border-color: var(--green); color: var(--green); }
@@ -283,20 +287,44 @@
 
   /* HOMEPAGE STEP 1 */
   #wpage-1 { padding: 0; margin: -2rem -1.5rem; }
-  .hp-hero { background: linear-gradient(160deg, #0a3d2e 0%, #0F6E56 50%, #1D9E75 100%); min-height: 75vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem 3rem; text-align: center; position: relative; overflow: hidden; }
-  .hp-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
-  .hp-eyebrow { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; }
-  .hp-title { font-size: clamp(32px, 6vw, 56px); font-weight: 700; color: white; font-family: var(--font); line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px; }
+  body.on-homepage #screen-form { max-width: 100%; padding: 0; }
+  .hp-hero { background: linear-gradient(160deg, #0a3d2e 0%, #0F6E56 50%, #1D9E75 100%); min-height: calc(100vh - 52px); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2rem 3rem; text-align: center; position: relative; overflow: hidden; }
+  .hp-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); pointer-events: none; }
+  .hp-eyebrow { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1rem; position: relative; z-index: 1; }
+  .hp-title { font-size: clamp(32px, 6vw, 56px); font-weight: 700; color: white; font-family: var(--font); line-height: 1.15; margin-bottom: 1rem; letter-spacing: -1px; position: relative; z-index: 1; }
   .hp-title span { color: var(--green-light); }
-  .hp-sub { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 2.5rem; max-width: 480px; line-height: 1.6; }
-  .hp-search-box { background: white; border-radius: 16px; padding: 8px 8px 8px 20px; display: flex; align-items: center; gap: 10px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
-  .hp-search-box input { flex: 1; font-size: 16px; border: none; outline: none; font-family: var(--font-ui); color: var(--text); background: transparent; }
+  .hp-sub { font-size: 16px; color: rgba(255,255,255,0.7); margin-bottom: 2.5rem; max-width: 480px; line-height: 1.6; position: relative; z-index: 1; }
+  .hp-search-box { background: white; border-radius: 16px; padding: 8px 8px 8px 20px; display: flex; align-items: center; gap: 10px; width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); position: relative; z-index: 2; }
+  .hp-search-box input { flex: 1; font-size: 16px; border: none; outline: none; font-family: var(--font-ui); color: var(--text); background: transparent; min-width: 0; }
   .hp-search-box input::placeholder { color: var(--text-sec); }
-  .hp-search-btn { background: var(--green); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-ui); white-space: nowrap; transition: background 0.15s; }
+  .hp-search-btn { background: var(--green); color: white; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: var(--font-ui); white-space: nowrap; transition: background 0.15s; flex-shrink: 0; }
   .hp-search-btn:hover { background: var(--green-dark); }
-  .hp-popular { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .hp-popular { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; position: relative; z-index: 1; }
   .hp-chip { font-size: 12px; color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.12); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 14px; cursor: pointer; transition: all 0.15s; }
-  .hp-chip:hover { background: rgba(255,255,255,0.2); color: white; }
+  .date-range-picker { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border: 0.5px solid var(--border-med); border-radius: var(--radius); background: var(--bg); cursor: pointer; font-size: 14px; color: var(--text); transition: border-color 0.15s; position: relative; user-select: none; }
+  .date-range-picker:hover { border-color: var(--green-mid); }
+  .date-range-picker.open { border-color: var(--green); }
+  .drp-clear { margin-left: auto; color: var(--text-sec); cursor: pointer; font-size: 12px; padding: 2px 4px; }
+  .drp-calendar { position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: white; border: 0.5px solid var(--border-med); border-radius: var(--radius-lg); box-shadow: 0 8px 32px rgba(0,0,0,0.12); z-index: 200; padding: 16px; min-width: 280px; }
+  .drp-cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .drp-nav { background: none; border: 0.5px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; font-size: 16px; color: var(--text-sec); display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .drp-nav:hover { border-color: var(--green); color: var(--green); }
+  .drp-month-label { font-size: 14px; font-weight: 600; color: var(--text); }
+  .drp-cal-days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+  .drp-cal-days-header span { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-sec); padding: 4px 0; }
+  .drp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .drp-day { text-align: center; padding: 7px 4px; border-radius: 6px; font-size: 13px; cursor: pointer; color: var(--text); transition: all 0.1s; }
+  .drp-day:hover:not(.drp-empty):not(.drp-past) { background: var(--green-pale); color: var(--green-dark); }
+  .drp-day.drp-empty { cursor: default; }
+  .drp-day.drp-past { color: var(--text-ter); cursor: default; }
+  .drp-day.drp-start { background: var(--green-dark); color: white; border-radius: 6px 0 0 6px; }
+  .drp-day.drp-end { background: var(--green-dark); color: white; border-radius: 0 6px 6px 0; }
+  .drp-day.drp-start.drp-end { border-radius: 6px; }
+  .drp-day.drp-in-range { background: var(--green-pale); color: var(--green-dark); border-radius: 0; }
+  .drp-hint { font-size: 11px; color: var(--text-sec); text-align: center; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid var(--border); }
+
+  /* HP field relative for calendar */
+  .hp-field { position: relative; }
   .hp-details { background: white; padding: 2rem 2rem 1.5rem; }
   .hp-details-title { font-size: 13px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.25rem; }
   .hp-dates-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
@@ -560,13 +588,29 @@
         <div class="hp-details-title">Trip details</div>
         <div class="form-section" data-sec="1" style="margin-bottom:0">
           <div class="hp-dates-row">
-            <div class="hp-field">
-              <label>Departure</label>
-              <input type="date" onchange="updateProgress(); syncDatesWithPace()">
-            </div>
-            <div class="hp-field">
-              <label>Return</label>
-              <input type="date" onchange="updateProgress(); syncDatesWithPace()">
+            <div class="hp-field" style="grid-column: 1 / 3">
+              <label>Travel dates</label>
+              <div class="date-range-picker" id="date-range-picker" onclick="toggleDatePicker()">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1"/><path d="M5 3V1M11 3V1M2 7h12"/></svg>
+                <span id="date-range-label">Select dates</span>
+                <span class="drp-clear" id="drp-clear" onclick="clearDates(event)" style="display:none">✕</span>
+              </div>
+              <!-- Hidden inputs for form data -->
+              <input type="hidden" id="dep-date-input">
+              <input type="hidden" id="ret-date-input">
+              <!-- Calendar dropdown -->
+              <div class="drp-calendar" id="drp-calendar" style="display:none">
+                <div class="drp-cal-header">
+                  <button class="drp-nav" onclick="calNav(-1)">‹</button>
+                  <span class="drp-month-label" id="drp-month-label"></span>
+                  <button class="drp-nav" onclick="calNav(1)">›</button>
+                </div>
+                <div class="drp-cal-days-header">
+                  <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+                </div>
+                <div class="drp-cal-grid" id="drp-cal-grid"></div>
+                <div class="drp-hint" id="drp-hint">Select your departure date</div>
+              </div>
             </div>
             <div class="hp-field">
               <label>Travellers</label>
@@ -1139,7 +1183,7 @@ function goToStep(n) {
     else el.classList.add('inactive');
   }
   document.querySelectorAll('.wstep-line').forEach((l, i) => l.classList.toggle('done', i + 1 < n));
-  // Hide wizard steps bar on step 1 — it's a homepage
+  document.body.classList.toggle('on-homepage', n === 1);
   document.getElementById('progress-bar-wrap').style.display = n === 1 ? 'none' : 'block';
   if (n === 2) { syncDatesWithPace(); renderDays(); }
   window.scrollTo(0, 0);
@@ -1309,14 +1353,14 @@ function collectFormData() {
   // Destination & dates — from homepage step 1
   const destSection = document.querySelector('[data-sec="1"]');
   const inputs1 = destSection ? destSection.querySelectorAll('input') : [];
-  const destination = (document.getElementById('hp-destination')?.value || inputs1[0]?.value || '').trim();
-  const depDate = inputs1[0]?.value || '';
-  const retDate = inputs1[1]?.value || '';
-  const travellers = inputs1[2]?.value || '2';
-  const landingTime = inputs1[3]?.value || '';
-  const arrAirport = inputs1[4]?.value || '';
-  const depTime = inputs1[5]?.value || '';
-  const depAirport = inputs1[6]?.value || '';
+  const destination = (document.getElementById('hp-destination')?.value || '').trim();
+  const depDate = document.getElementById('dep-date-input')?.value || '';
+  const retDate = document.getElementById('ret-date-input')?.value || '';
+  const travellers = inputs1[0]?.value || '2'; // first input in data-sec=1 is now travellers
+  const landingTime = inputs1[1]?.value || '';
+  const arrAirport = inputs1[2]?.value || '';
+  const depTime = inputs1[3]?.value || '';
+  const depAirport = inputs1[4]?.value || '';
 
   // Accommodation
   const accSec = document.querySelector('[data-sec="2"]');
@@ -1667,8 +1711,7 @@ const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
 let numDays = 7, days = [...PRESETS.balanced], selMode = 'intense';
 
 function getTripDates() {
-  const depInput = document.querySelector('[data-sec="1"] input[type=date]');
-  const depVal = depInput?.value;
+  const depVal = document.getElementById('dep-date-input')?.value || drpStartDate;
   if (!depVal) return null;
   const start = new Date(depVal);
   if (isNaN(start.getTime())) return null;
@@ -1690,9 +1733,8 @@ function getDayName(startDate, i) {
 }
 
 function syncDatesWithPace() {
-  const inputs = document.querySelectorAll('[data-sec="1"] input[type=date]');
-  const depVal = inputs[0]?.value;
-  const retVal = inputs[1]?.value;  if (depVal && retVal) {
+  const depVal = document.getElementById('dep-date-input')?.value || drpStartDate;
+  const retVal = document.getElementById('ret-date-input')?.value || drpEndDate;  if (depVal && retVal) {
     const dep = new Date(depVal);
     const ret = new Date(retVal);
     const diff = Math.round((ret - dep) / (1000*60*60*24));
@@ -1810,6 +1852,90 @@ function toggleEdit() {
   hint.classList.toggle('show', editOn);
   document.querySelectorAll('.editable').forEach(el => el.contentEditable = editOn ? 'true' : 'false');
 }
+
+// DATE RANGE PICKER
+let drpStartDate = null, drpEndDate = null, drpCurrentMonth = new Date();
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+function toggleDatePicker() {
+  const cal = document.getElementById('drp-calendar');
+  const picker = document.getElementById('date-range-picker');
+  if (!cal) return;
+  const isOpen = cal.style.display !== 'none';
+  if (isOpen) { cal.style.display = 'none'; picker.classList.remove('open'); }
+  else { cal.style.display = 'block'; picker.classList.add('open'); drpCurrentMonth = drpStartDate ? new Date(drpStartDate) : new Date(); renderCalendar(); }
+}
+
+function clearDates(e) {
+  e.stopPropagation();
+  drpStartDate = null; drpEndDate = null;
+  const di = document.getElementById('dep-date-input');
+  const ri = document.getElementById('ret-date-input');
+  if (di) di.value = ''; if (ri) ri.value = '';
+  document.getElementById('date-range-label').textContent = 'Select dates';
+  document.getElementById('drp-clear').style.display = 'none';
+  syncDatesWithPace();
+}
+
+function calNav(dir) {
+  drpCurrentMonth = new Date(drpCurrentMonth.getFullYear(), drpCurrentMonth.getMonth() + dir, 1);
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('drp-cal-grid');
+  const label = document.getElementById('drp-month-label');
+  const hint = document.getElementById('drp-hint');
+  if (!grid) return;
+  const y = drpCurrentMonth.getFullYear(), m = drpCurrentMonth.getMonth();
+  label.textContent = MONTHS[m] + ' ' + y;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(y, m, 1);
+  let startDow = firstDay.getDay();
+  startDow = startDow === 0 ? 6 : startDow - 1;
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  let html = '';
+  for (let i = 0; i < startDow; i++) html += '<div class="drp-day drp-empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const date = new Date(y, m, d);
+    const dateStr = date.toISOString().split('T')[0];
+    let cls = 'drp-day';
+    if (date < today) { cls += ' drp-past'; html += '<div class="' + cls + '">' + d + '</div>'; continue; }
+    if (drpStartDate && dateStr === drpStartDate) cls += ' drp-start';
+    if (drpEndDate && dateStr === drpEndDate) cls += ' drp-end';
+    if (drpStartDate && drpEndDate && dateStr > drpStartDate && dateStr < drpEndDate) cls += ' drp-in-range';
+    html += '<div class="' + cls + '" onclick="selectDrpDay(\'' + dateStr + '\')">' + d + '</div>';
+  }
+  grid.innerHTML = html;
+  if (hint) hint.textContent = !drpStartDate ? 'Select your departure date' : !drpEndDate ? 'Now select your return date' : 'Dates selected ✓';
+}
+
+function selectDrpDay(dateStr) {
+  if (!drpStartDate || (drpStartDate && drpEndDate) || dateStr < drpStartDate) {
+    drpStartDate = dateStr; drpEndDate = null;
+  } else {
+    drpEndDate = dateStr;
+    const dep = new Date(drpStartDate), ret = new Date(drpEndDate);
+    const fmt = d => d.getDate() + ' ' + MONTHS[d.getMonth()].slice(0,3) + ' ' + d.getFullYear();
+    document.getElementById('date-range-label').textContent = fmt(dep) + ' → ' + fmt(ret);
+    document.getElementById('dep-date-input').value = drpStartDate;
+    document.getElementById('ret-date-input').value = drpEndDate;
+    document.getElementById('drp-clear').style.display = 'inline';
+    document.getElementById('drp-calendar').style.display = 'none';
+    document.getElementById('date-range-picker').classList.remove('open');
+    syncDatesWithPace();
+  }
+  renderCalendar();
+}
+
+document.addEventListener('click', function(e) {
+  const picker = document.getElementById('date-range-picker');
+  const cal = document.getElementById('drp-calendar');
+  if (picker && cal && !picker.contains(e.target) && !cal.contains(e.target)) {
+    cal.style.display = 'none';
+    if (picker) picker.classList.remove('open');
+  }
+});
 
 // INIT — runs after full DOM is parsed
 showTab('form');
