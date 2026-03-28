@@ -344,6 +344,18 @@
   .cc-day { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
   .cc-cost { font-size: 9px; color: var(--green-dark); margin-top: 4px; background: var(--green-pale); border-radius: 20px; padding: 1px 6px; display: inline-block; }
   .days-hint { text-align: center; font-size: 13px; color: var(--text-sec); padding: 2rem 1.5rem; }
+  .day-detail-panel { max-width: 780px; margin: 0 auto; padding: 1.5rem; }
+  .ddp-empty { text-align: center; font-size: 13px; color: var(--text-sec); padding: 3rem 1rem; }
+  .ddp-header { margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--border); }
+  .ddp-day-label { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; }
+  .ddp-loc { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 8px; font-family: var(--font); }
+  .ddp-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ddp-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; }
+  .ddp-badge.intense { background: var(--green-dark); color: white; }
+  .ddp-badge.medium { background: var(--green-light); color: var(--green-dark); }
+  .ddp-badge.rest { background: var(--green-pale); border: 0.5px solid var(--green-light); color: var(--green-dark); }
+  .ddp-stats { font-size: 12px; color: var(--text-sec); }
+  .ddp-cost { font-size: 13px; font-weight: 600; color: var(--text); margin-left: auto; }
 
   /* DETAIL LAYOUT */
   .detail-layout { display: grid; grid-template-columns: 250px 1fr; gap: 0; background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); overflow: hidden; min-height: 600px; }
@@ -860,11 +872,11 @@
   <!-- SCREEN: DAYS -->
   <div class="screen" id="screen-days">
     <div class="carousel-wrap">
-      <div class="carousel-track" id="carousel-track">
-        <!-- populated by renderDaysScreen() -->
-      </div>
+      <div class="carousel-track" id="carousel-track"></div>
     </div>
-    <div class="days-hint">Select a day to see the full detail</div>
+    <div id="day-detail-panel" class="day-detail-panel">
+      <div class="ddp-empty">← Select a day from the carousel above</div>
+    </div>
   </div>
 
   <!-- SCREEN: DAY DETAIL -->
@@ -1041,7 +1053,6 @@ function goToStep(n) {
 function renderDaysScreen(plan) {
   const track = document.getElementById('carousel-track');
   if (!track) return;
-
   track.innerHTML = plan.days.map((d, i) =>
     '<div class="carousel-card" id="cc-' + i + '" onclick="selectDay(' + i + ')">' +
     '<div class="cc-dot ' + d.intensity + '">D' + d.dayNum + '</div>' +
@@ -1053,15 +1064,92 @@ function renderDaysScreen(plan) {
 }
 
 function selectDay(idx) {
-  // Highlight card
+  if (!window.tripPlan) return;
+  // Highlight card and scroll to center
   document.querySelectorAll('.carousel-card').forEach(c => c.classList.remove('active'));
   const card = document.getElementById('cc-' + idx);
-  if (card) {
-    card.classList.add('active');
-    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }
-  // Open detail after brief pause so scroll is visible
-  setTimeout(() => showDetailFromPlan(idx), 200);
+  if (card) { card.classList.add('active'); card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }
+
+  const d = window.tripPlan.days[idx];
+  const panel = document.getElementById('day-detail-panel');
+
+  // Build actions HTML
+  const actions = d.actions || [];
+  const actionsHTML = actions.length > 0
+    ? '<div class="actions-banner" style="margin-bottom:1rem">' +
+      '<div class="ab-title"><div class="ab-dot"></div><span>Actions required</span></div>' +
+      actions.map((a, i) =>
+        '<div class="action-item"><div class="acheck" id="dac' + i + '" onclick="tickDayAction(' + i + ')">' +
+        '<svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg></div>' +
+        '<div><div class="aname" id="dan' + i + '">' + a.name + '</div>' +
+        '<div class="adesc" id="dad' + i + '">' + a.description + '</div></div></div>'
+      ).join('') + '</div>'
+    : '';
+
+  // Build timeline
+  const periods = ['Morning','Lunch','Afternoon','Dinner','Evening'];
+  const periodMap = {'06':'Morning','07':'Morning','08':'Morning','09':'Morning','10':'Morning','11':'Morning','12':'Lunch','13':'Lunch','14':'Afternoon','15':'Afternoon','16':'Afternoon','17':'Afternoon','18':'Dinner','19':'Dinner','20':'Evening','21':'Evening','22':'Evening'};
+  const grouped = {};
+  periods.forEach(p => grouped[p] = []);
+  (d.activities || []).forEach(a => {
+    if (a.type === 'transfer') return;
+    const hour = a.time ? a.time.split(':')[0] : '10';
+    grouped[periodMap[hour] || 'Morning'].push(a);
+  });
+
+  let timelineHTML = '';
+  periods.forEach(period => {
+    const acts = grouped[period];
+    if (!acts.length) return;
+    timelineHTML += '<div class="period"><div class="period-lbl">' + period + ' <div class="period-line"></div></div><div class="timeline"><div class="tl-line"></div>';
+    acts.forEach(a => {
+      const isFood = period === 'Lunch' || period === 'Dinner';
+      const dotClass = isFood ? 'food' : 'soft';
+      const pillsHTML = (a.pills || []).map(p => {
+        if (p.startsWith('top10_')) return '<span class="pill top10">Top 10 #' + p.replace('top10_','') + '</span>';
+        if (p === 'book_ahead') return '<span class="pill book">Book ahead</span>';
+        return '<span class="pill passion">' + p + '</span>';
+      }).join('');
+      timelineHTML += '<div class="tl-item">' +
+        '<div class="tl-left"><div class="tl-time">' + (a.time || '') + '</div><div class="tl-dot ' + dotClass + '"></div></div>' +
+        (isFood ? '<div class="food-lbl"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--green-mid)"><path d="M5 2v5a3 3 0 006 0V2M8 10v4M3 2v4"/></svg>Recommended ' + period.toLowerCase() + '</div>' : '') +
+        '<div class="act-name-row"><span class="act-name">' + a.name + '</span>' + pillsHTML + '</div>' +
+        '<div class="act-desc">' + a.description + '</div>' +
+        '<div class="act-detail-row">' +
+        (a.duration ? '<span class="act-dur">' + a.duration + '</span>' : '') +
+        (a.cost ? '<span class="act-cost">' + a.cost + '</span>' : '') +
+        '</div></div>';
+      if (a.transferAfter) {
+        const icons = { walk:'<circle cx="6" cy="8" r="1.5"/><path d="M4 4h4v3a2 2 0 01-4 0V4z"/><path d="M6 2v2"/>', metro:'<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/>', train:'<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/>', taxi:'<rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/>' };
+        timelineHTML += '<div class="tl-transfer"><div class="trf-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">' + (icons[a.transferAfter.mode] || icons.walk) + '</svg></div><div class="trf-txt">' + a.transferAfter.minutes + ' min' + (a.transferAfter.note ? ' · ' + a.transferAfter.note : '') + '</div></div>';
+      }
+    });
+    timelineHTML += '</div></div>';
+  });
+
+  const allStops = (d.activities || []).filter(a => a.type !== 'transfer');
+  const stopColors = ['s1','s2','s2','s3','s3','s4','s4','s4'];
+  const stopsHTML = allStops.length ? '<div class="stops-block"><div class="stops-title">Today\'s stops</div>' +
+    allStops.map((a, i) => '<div class="stop-row"><div class="snum ' + (stopColors[i]||'s4') + '">' + (i+1) + '</div>' + a.name + '</div>').join('') +
+    '<div class="map-note">Interactive map coming soon — stops will appear on Google Maps.</div></div>' : '';
+
+  panel.innerHTML =
+    '<div class="ddp-header">' +
+      '<div class="ddp-day-label">Day ' + d.dayNum + ' · ' + d.date + '</div>' +
+      '<div class="ddp-loc">' + d.location + '</div>' +
+      '<div class="ddp-meta">' +
+        '<span class="ddp-badge ' + d.intensity + '">' + d.intensity.charAt(0).toUpperCase() + d.intensity.slice(1) + '</span>' +
+        '<span class="ddp-stats">' + allStops.length + ' stops</span>' +
+        (d.dayCost ? '<span class="ddp-cost">~€' + d.dayCost + ' / person</span>' : '') +
+      '</div>' +
+      (d.deviationNote ? '<div class="dev-pill" style="margin-top:8px">' + d.deviationNote + '</div>' : '') +
+    '</div>' +
+    actionsHTML +
+    timelineHTML +
+    stopsHTML;
+
+  // Scroll panel into view
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
 function toggleTodoPanel(btn) {
@@ -1362,115 +1450,10 @@ function renderOutput(plan) {
   }
 }
 
-// RENDER DAY DETAIL FROM PLAN
+// RENDER DAY DETAIL FROM PLAN — now routes to inline panel in screen-days
 function showDetailFromPlan(idx) {
-  showTab('detail');
-  if (!window.tripPlan) return;
-  const d = window.tripPlan.days[idx];
-
-  // Update breadcrumb
-  document.getElementById('det-breadcrumb').textContent = `Day ${d.dayNum} · ${d.location.split('·')[1]?.trim() || d.location}`;
-
-  // Update header
-  document.querySelector('.det-day-label').textContent = `Day ${d.dayNum} · ${d.date}`;
-  document.querySelector('.det-loc').textContent = d.location;
-  document.querySelector('.det-badge').textContent = d.intensity.charAt(0).toUpperCase() + d.intensity.slice(1);
-  document.querySelector('.det-badge').className = `det-badge ${d.intensity}`;
-  document.querySelector('.det-stats').textContent = `${d.activities.filter(a=>a.type!=='transfer').length} stops · ~€${d.dayCost} / person`;
-  document.querySelector('.det-cost-val').textContent = `~€${d.dayCost} / person`;
-
-  // Active state in left panel
-  document.querySelectorAll('.dl-row').forEach((r,i) => r.classList.toggle('active', i === idx));
-
-  // Actions banner
-  const banner = document.getElementById('actions-banner');
-  const actions = d.actions || [];
-  if (actions.length > 0) {
-    banner.style.display = 'block';
-    banner.className = 'actions-banner';
-    banner.innerHTML = '<div class="ab-title"><div class="ab-dot" style="background:var(--red-dark)"></div><span>Actions required for today</span></div>' +
-      actions.map((a,i) => '<div class="action-item"><div class="acheck" id="dac' + i + '" onclick="tickDayAction(' + i + ')"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 5l2.5 2.5 4.5-4.5"/></svg></div><div><div class="aname" id="dan' + i + '">' + a.name + '</div><div class="adesc" id="dad' + i + '">' + a.description + '</div></div></div>').join('');
-  } else {
-    banner.style.display = 'none';
-  }
-
-  // Build timeline
-  const periods = ['Morning','Lunch','Afternoon','Dinner','Evening'];
-  const periodMap = { '06':'Morning','07':'Morning','08':'Morning','09':'Morning','10':'Morning','11':'Morning',
-    '12':'Lunch','13':'Lunch','14':'Afternoon','15':'Afternoon','16':'Afternoon','17':'Afternoon',
-    '18':'Dinner','19':'Dinner','20':'Evening','21':'Evening','22':'Evening' };
-
-  // Group activities by period
-  const grouped = {};
-  periods.forEach(p => grouped[p] = []);
-  d.activities.forEach(a => {
-    if (a.type === 'transfer') return;
-    const hour = a.time ? a.time.split(':')[0] : '10';
-    const period = periodMap[hour] || 'Morning';
-    grouped[period].push(a);
-  });
-
-  // Build detail right content
-  const right = document.querySelector('.detail-right');
-  const headerHTML = right.querySelector('.det-header').outerHTML;
-  const editBarHTML = `<div class="edit-bar"><button class="edit-btn" id="edit-btn" onclick="toggleEdit()"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg> Edit this day</button></div><div class="edit-hint" id="edit-hint">Click any activity name or description to edit it directly.</div>`;
-
-  let timelineHTML = '';
-  periods.forEach(period => {
-    const acts = grouped[period];
-    if (!acts.length) return;
-    timelineHTML += `<div class="period"><div class="period-lbl">${period} <div class="period-line"></div></div><div class="timeline"><div class="tl-line"></div>`;
-    acts.forEach((a, ai) => {
-      const isFood = period === 'Lunch' || period === 'Dinner';
-      const dotClass = isFood ? 'food' : (a.pills?.includes('book_ahead') ? '' : 'soft');
-      const pillsHTML = (a.pills || []).map(p => {
-        if (p.startsWith('top10_')) return `<span class="pill top10">Top 10 #${p.replace('top10_','')}</span>`;
-        if (p === 'book_ahead') return `<span class="pill book">Book ahead</span>`;
-        return `<span class="pill passion">${p}</span>`;
-      }).join('');
-      timelineHTML += `
-        <div class="tl-item">
-          <div class="tl-left"><div class="tl-time">${a.time || ''}</div><div class="tl-dot ${dotClass}"></div></div>
-          ${isFood ? `<div class="food-lbl"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--green-mid)"><path d="M5 2v5a3 3 0 006 0V2M8 10v4M3 2v4"/></svg>Recommended ${period.toLowerCase()}</div>` : ''}
-          <div class="act-name-row"><span class="act-name editable">${a.name}</span>${pillsHTML}</div>
-          <div class="act-desc editable">${a.description}</div>
-          <div class="act-detail-row">
-            ${a.duration ? `<span class="act-dur">${a.duration}</span>` : ''}
-            ${a.cost ? `<span class="act-cost">${a.cost}</span>` : ''}
-          </div>
-        </div>`;
-      if (a.transferAfter) {
-        const icons = { walk: `<circle cx="6" cy="8" r="1.5"/><path d="M4 4h4v3a2 2 0 01-4 0V4z"/><path d="M6 2v2"/>`,
-          metro: `<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/><circle cx="3" cy="6" r="0.6" fill="currentColor"/><circle cx="9" cy="6" r="0.6" fill="currentColor"/>`,
-          train: `<rect x="1" y="4" width="10" height="6" rx="1"/><path d="M3 10v1M9 10v1M1 7h10"/>`,
-          taxi: `<rect x="2" y="7" width="9" height="5" rx="1"/><circle cx="5" cy="12" r="1.2"/><circle cx="9" cy="12" r="1.2"/><path d="M11 9h1a1 1 0 011 1v2h-2V9z"/>` };
-        timelineHTML += `<div class="tl-transfer"><div class="trf-icon"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5">${icons[a.transferAfter.mode] || icons.walk}</svg></div><div class="trf-txt">${a.transferAfter.minutes} min${a.transferAfter.note ? ' · ' + a.transferAfter.note : ''}</div></div>`;
-      }
-    });
-    timelineHTML += `</div></div>`;
-  });
-
-  // Stops block
-  const allStops = d.activities.filter(a => a.type !== 'transfer');
-  const stopColors = ['s1','s2','s2','s3','s3','s4','s4','s4'];
-  const stopsHTML = `<div class="stops-block"><div class="stops-title">Today's stops</div>${allStops.map((a,i) =>
-    `<div class="stop-row"><div class="snum ${stopColors[i]||'s4'}">${i+1}</div>${a.name}</div>`).join('')}
-    <div class="map-note">Interactive map coming in the next version — stops will be plotted on Google Maps.</div></div>`;
-
-  right.innerHTML = headerHTML +
-    (actions.length ? banner.outerHTML : '') +
-    editBarHTML + timelineHTML + stopsHTML +
-    `<div class="det-footer"><button class="out-btn" onclick="showOutput()">← Back to plan</button></div>`;
-
-  // Re-render header values
-  document.querySelector('.det-day-label').textContent = `Day ${d.dayNum} · ${d.date}`;
-  document.querySelector('.det-loc').textContent = d.location;
-  document.querySelector('.det-badge').textContent = d.intensity.charAt(0).toUpperCase() + d.intensity.slice(1);
-  document.querySelector('.det-badge').className = `det-badge ${d.intensity}`;
-  document.querySelector('.det-stats').textContent = `${allStops.length} stops · ~€${d.dayCost} / person`;
-  document.querySelector('.det-cost-val').textContent = `~€${d.dayCost} / person`;
-
-  editOn = false;
+  showTab('days');
+  setTimeout(() => selectDay(idx), 50);
 }
 
 function tickDayAction(i) {
